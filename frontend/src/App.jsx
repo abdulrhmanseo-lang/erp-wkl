@@ -13,6 +13,7 @@ import DecisionEngine from './pages/DecisionEngine';
 import Notifications from './pages/Notifications';
 import Billing from './pages/Billing';
 import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 import SectorModule from './pages/SectorModule';
 import AdminDashboard from './pages/AdminDashboard';
 import './index.css';
@@ -32,6 +33,12 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
+      {/* Shared Profile & Settings (Accessible by any logged-in user regardless of role) */}
+      <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+      </Route>
+
       {/* Client Dashboard */}
       <Route path="/app" element={
         <ProtectedRoute><DashboardLayout /></ProtectedRoute>
@@ -45,7 +52,6 @@ function AppRoutes() {
         <Route path="sector" element={<SectorModule />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="billing" element={<Billing />} />
-        <Route path="settings" element={<Settings />} />
       </Route>
 
       {/* Admin Dashboard */}

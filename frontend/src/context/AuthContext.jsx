@@ -1,12 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(null);
-
-const mockUsers = {
-    'admin@smartops.ai': { name: 'مدير النظام', role: 'super_admin', company: null },
-    'owner@test.com': { name: 'عبدالله المطيري', role: 'company_owner', company: 'مجموعة دار العقار', sector: 'real_estate' },
-    'employee@test.com': { name: 'سارة أحمد', role: 'employee', company: 'مجموعة دار العقار', sector: 'real_estate' },
-};
+const API_URL = 'http://localhost:8000/api/v1';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(() => {
@@ -14,37 +9,67 @@ export function AuthProvider({ children }) {
         return saved ? JSON.parse(saved) : null;
     });
 
-    const login = (email, password) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const mockUser = mockUsers[email];
-                if (mockUser && password === '123456') {
-                    const userData = { email, ...mockUser };
-                    setUser(userData);
-                    localStorage.setItem('smartops_user', JSON.stringify(userData));
-                    resolve(userData);
-                } else {
-                    reject(new Error('بيانات الدخول غير صحيحة'));
-                }
-            }, 800);
-        });
+    const login = async (email, password) => {
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || 'بيانات الدخول غير صحيحة');
+            }
+
+            let role = data.user.role;
+            if (role === 'SUPER_ADMIN') role = 'super_admin';
+            if (role === 'COMPANY_OWNER') role = 'company_owner';
+            if (role === 'EMPLOYEE') role = 'employee';
+
+            const userData = { ...data.user, token: data.access_token, role: role, name: data.user.full_name };
+            setUser(userData);
+            localStorage.setItem('smartops_user', JSON.stringify(userData));
+            return userData;
+        } catch (error) {
+            throw new Error(error.message || 'بيانات الدخول غير صحيحة');
+        }
     };
 
-    const register = (data) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const userData = {
-                    email: data.email,
-                    name: data.name,
-                    role: 'company_owner',
-                    company: data.companyName,
-                    sector: data.sector,
-                };
-                setUser(userData);
-                localStorage.setItem('smartops_user', JSON.stringify(userData));
-                resolve(userData);
-            }, 800);
-        });
+    const register = async (userDataInput) => {
+        try {
+            const payload = {
+                email: userDataInput.email,
+                password: userDataInput.password || '123456',
+                full_name: userDataInput.name,
+                phone: userDataInput.phone || '',
+                company_name: userDataInput.companyName,
+                sector: userDataInput.sector || 'ecommerce'
+            };
+
+            const response = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || 'حدث خطأ أثناء التسجيل');
+            }
+
+            let role = data.user.role;
+            if (role === 'SUPER_ADMIN') role = 'super_admin';
+            if (role === 'COMPANY_OWNER') role = 'company_owner';
+            if (role === 'EMPLOYEE') role = 'employee';
+
+            const userData = { ...data.user, token: data.access_token, role: role, name: data.user.full_name };
+            setUser(userData);
+            localStorage.setItem('smartops_user', JSON.stringify(userData));
+            return userData;
+        } catch (error) {
+            throw error;
+        }
     };
 
     const logout = () => {

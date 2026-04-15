@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FiBell, FiSearch, FiMenu, FiChevronDown } from 'react-icons/fi';
 import { notifications } from '../data/mockData';
 
 export default function Navbar({ onToggleSidebar }) {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [showNotifs, setShowNotifs] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const unreadCount = notifications.filter(n => !n.read).length;
@@ -69,10 +71,10 @@ export default function Navbar({ onToggleSidebar }) {
                                 </div>
                             </div>
                             <div className="dropdown-divider" />
-                            <button className="dropdown-item">الملف الشخصي</button>
-                            <button className="dropdown-item">الإعدادات</button>
+                            <button className="dropdown-item" onClick={() => { setShowProfile(false); navigate('/profile'); }}>الملف الشخصي</button>
+                            <button className="dropdown-item" onClick={() => { setShowProfile(false); navigate('/settings'); }}>الإعدادات</button>
                             <div className="dropdown-divider" />
-                            <button className="dropdown-item text-danger">تسجيل الخروج</button>
+                            <button className="dropdown-item text-danger" onClick={() => { logout(); navigate('/'); }}>تسجيل الخروج</button>
                         </div>
                     )}
                 </div>
