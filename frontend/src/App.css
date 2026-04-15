@@ -137,12 +137,6 @@
   pointer-events: none;
 }
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  text-align: center;
-}
-
 /* Profile specific styles */
 .profile-cover {
   height: 140px;
