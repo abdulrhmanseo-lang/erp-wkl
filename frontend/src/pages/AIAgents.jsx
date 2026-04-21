@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { aiAgents } from '../data/mockData';
 import { FiActivity, FiTrendingUp, FiCheck, FiPause, FiPlay, FiSettings, FiX, FiSend, FiMessageCircle } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 const agentResponses = {
     sales: [
@@ -30,6 +31,42 @@ export default function AIAgents() {
     const [inputMsg, setInputMsg] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const chatBodyRef = useRef(null);
+    const [fleetMeta, setFleetMeta] = useState(null);
+
+    useEffect(() => {
+        let cancel = false;
+        (async () => {
+            try {
+                const res = await apiFetch('/ai/agents/overview');
+                if (!res.ok || cancel) return;
+                const data = await res.json();
+                setFleetMeta({
+                    fleet_health: data.fleet_health,
+                    total_tasks: data.total_tasks_today,
+                    playbooks: data.cross_agent_playbooks || [],
+                });
+                setAgents((prev) =>
+                    prev.map((a) => {
+                        const live = (data.agents || []).find((x) => x.id === a.id);
+                        if (!live) return a;
+                        const extras = (live.workflows || []).map((w) => `سير عمل نشط: ${w}`);
+                        return {
+                            ...a,
+                            tasks: live.tasks_today ?? a.tasks,
+                            accuracy: live.accuracy ?? a.accuracy,
+                            status: live.status === 'paused' ? 'paused' : 'active',
+                            apiExtras: extras,
+                        };
+                    })
+                );
+            } catch {
+                /* يبقى الوضع المحلي */
+            }
+        })();
+        return () => {
+            cancel = true;
+        };
+    }, []);
 
     const toggleAgent = (id) => {
         setAgents(agents.map(a => a.id === id ? { ...a, status: a.status === 'active' ? 'paused' : 'active' } : a));
@@ -47,19 +84,35 @@ export default function AIAgents() {
         setInputMsg('');
     };
 
-    const sendMessage = () => {
-        if (!inputMsg.trim() || isTyping) return;
+    const sendMessage = async () => {
+        if (!inputMsg.trim() || isTyping || !chatAgent) return;
         const userMsg = { id: Date.now(), type: 'user', text: inputMsg };
-        setMessages(prev => [...prev, userMsg]);
+        setMessages((prev) => [...prev, userMsg]);
+        const outgoing = inputMsg;
         setInputMsg('');
         setIsTyping(true);
 
-        setTimeout(() => {
+        try {
+            const res = await apiFetch('/ai/agents/chat', {
+                method: 'POST',
+                body: JSON.stringify({ agent_id: chatAgent.id, message: outgoing }),
+            });
+            const data = res.ok ? await res.json() : null;
+            const text =
+                data?.reply ||
+                (agentResponses[chatAgent.id] || agentResponses.sales)[
+                    Math.floor(Math.random() * (agentResponses[chatAgent.id] || agentResponses.sales).length)
+                ];
+            setMessages((prev) => [...prev, { id: Date.now(), type: 'bot', text }]);
+        } catch {
             const responses = agentResponses[chatAgent.id] || agentResponses.sales;
-            const randomResp = responses[Math.floor(Math.random() * responses.length)];
-            setMessages(prev => [...prev, { id: Date.now(), type: 'bot', text: randomResp }]);
+            setMessages((prev) => [
+                ...prev,
+                { id: Date.now(), type: 'bot', text: responses[Math.floor(Math.random() * responses.length)] },
+            ]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
     };
 
     useEffect(() => {
@@ -75,7 +128,24 @@ export default function AIAgents() {
                     <h1>وكلاء الذكاء الاصطناعي</h1>
                     <p className="text-secondary">إدارة ومراقبة وكلاء AI الذين يعملون لصالح عملك</p>
                 </div>
+                {fleetMeta && (
+                    <div className="flex gap-2" style={{ flexWrap: 'wrap', alignItems: 'center' }}>
+                        <span className="badge badge-primary">صحة الأسطول {Math.round(fleetMeta.fleet_health * 100)}%</span>
+                        <span className="badge badge-success">{fleetMeta.total_tasks} مهمة اليوم (مجمّعة)</span>
+                    </div>
+                )}
             </div>
+
+            {fleetMeta?.playbooks?.length > 0 && (
+                <div className="glass-card mb-6">
+                    <h3 className="mb-2 text-sm text-secondary">أتمتة متعددة الوكلاء</h3>
+                    <ul className="text-sm" style={{ margin: 0, paddingInlineStart: '1.25rem' }}>
+                        {fleetMeta.playbooks.map((p, i) => (
+                            <li key={i} style={{ marginBottom: 6 }}>{p}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             <div className="agents-grid stagger-children">
                 {agents.map((agent) => (
@@ -110,7 +180,7 @@ export default function AIAgents() {
 
                         <div className="agent-insights">
                             <h5>آخر الرؤى:</h5>
-                            {agent.insights.map((ins, i) => (
+                            {[...(agent.insights || []), ...(agent.apiExtras || [])].map((ins, i) => (
                                 <div key={i} className="agent-insight-item">
                                     <FiCheck size={14} style={{ color: agent.color, flexShrink: 0 }} />
                                     <span className="text-sm">{ins}</span>

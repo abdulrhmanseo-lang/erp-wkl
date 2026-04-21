@@ -1,7 +1,27 @@
+import { useState, useEffect } from 'react';
 import { pricingPlans } from '../data/mockData';
-import { FiCheck, FiCreditCard, FiCalendar, FiArrowLeft } from 'react-icons/fi';
+import { FiCheck, FiCreditCard, FiCalendar, FiArrowLeft, FiZap } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 export default function Billing() {
+    const [subAi, setSubAi] = useState(null);
+
+    useEffect(() => {
+        let c = false;
+        (async () => {
+            try {
+                const res = await apiFetch('/ai/subscription-insights');
+                if (!res.ok || c) return;
+                setSubAi(await res.json());
+            } catch {
+                /* ignore */
+            }
+        })();
+        return () => {
+            c = true;
+        };
+    }, []);
+
     return (
         <div className="page-enter">
             <div className="page-header">
@@ -31,6 +51,24 @@ export default function Billing() {
                             <div className="font-bold">**** 4532</div>
                         </div>
                     </div>
+                    {subAi && (
+                        <div className="glass p-4 mt-4" style={{ borderRadius: 'var(--radius-lg)', width: '100%' }}>
+                            <div className="flex items-center gap-2 mb-2">
+                                <FiZap size={16} />
+                                <span className="font-semibold text-sm">تحليل الاشتراك</span>
+                            </div>
+                            <p className="text-sm text-secondary" style={{ margin: '0 0 6px' }}>
+                                مخاطر التجديد: <span className="text-success">{subAi.renewal_risk}</span>
+                                {' — '}المقاعد: {subAi.seat_usage?.used}/{subAi.seat_usage?.included}
+                                {' — '}تقدير الفاتورة القادمة: {subAi.next_bill_estimate_sar} ر.س
+                            </p>
+                            <ul className="text-xs text-muted" style={{ margin: 0, paddingInlineStart: '1.1rem' }}>
+                                {(subAi.upgrade_value_props || []).map((u, i) => (
+                                    <li key={i}>{u}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
 

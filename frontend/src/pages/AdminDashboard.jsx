@@ -3,21 +3,21 @@ import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 import { FiUsers, FiDollarSign, FiActivity, FiCpu, FiEye, FiTrash2, FiPause, FiBarChart2 } from 'react-icons/fi';
+import { apiV1, apiFetch } from '../lib/api';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function AdminDashboard() {
     const location = useLocation();
     const path = location.pathname;
 
     const [companies, setCompanies] = useState([]);
+    const [fleet, setFleet] = useState(null);
 
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/v1/companies`);
+                const res = await fetch(apiV1('/companies'));
                 const data = await res.json();
                 setCompanies(data.companies || []);
             } catch (err) {
@@ -25,6 +25,22 @@ export default function AdminDashboard() {
             }
         };
         fetchCompanies();
+    }, []);
+
+    useEffect(() => {
+        let c = false;
+        (async () => {
+            try {
+                const res = await apiFetch('/ai/admin/fleet-stats');
+                if (!res.ok || c) return;
+                setFleet(await res.json());
+            } catch {
+                /* ignore */
+            }
+        })();
+        return () => {
+            c = true;
+        };
     }, []);
 
     const totalRevenue = companies.reduce((s, c) => s + (c.revenue || 0), 0);
@@ -79,7 +95,8 @@ export default function AdminDashboard() {
                     </div>
                     <div className="glass-card">
                         <div className="flex items-center gap-3 mb-2"><FiCpu style={{ color: '#F87171' }} /><span className="text-secondary">وكلاء AI نشطين</span></div>
-                        <div className="text-2xl font-bold">18</div>
+                        <div className="text-2xl font-bold">{fleet?.agents_total_active_instances ?? '—'}</div>
+                        <div className="text-xs text-muted">دقة وسيط {fleet ? Math.round(fleet.median_accuracy * 100) : '—'}%</div>
                     </div>
                 </div>
             )}
@@ -143,24 +160,29 @@ export default function AdminDashboard() {
                 <div className="glass-card mt-6">
                     <h3 className="mb-4"><FiCpu /> التحكم المستقل للذكاء الاصطناعي</h3>
                     <div className="grid grid-3 gap-4">
-                        {[
-                            { name: 'وكيل المبيعات', active: 18, accuracy: '94%' },
-                            { name: 'وكيل التسويق', active: 15, accuracy: '91%' },
-                            { name: 'وكيل الدعم', active: 22, accuracy: '88%' },
-                        ].map((a, i) => (
+                        {(fleet?.agents || [
+                            { name: 'وكيل المبيعات', active_tenants: 18, accuracy_pct: 94 },
+                            { name: 'وكيل التسويق', active_tenants: 15, accuracy_pct: 91 },
+                            { name: 'وكيل الدعم', active_tenants: 22, accuracy_pct: 88 },
+                        ]).map((a, i) => (
                             <div key={i} className="glass p-4" style={{ borderRadius: 'var(--radius-lg)' }}>
                                 <h4 className="font-semibold mb-2">{a.name}</h4>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-secondary">نشط في:</span>
-                                    <span>{a.active} مؤسسة</span>
+                                    <span>{a.active_tenants ?? a.active} مؤسسة</span>
                                 </div>
                                 <div className="flex justify-between text-sm mt-1">
                                     <span className="text-secondary">الدقة:</span>
-                                    <span className="text-gradient font-bold">{a.accuracy}</span>
+                                    <span className="text-gradient font-bold">{a.accuracy_pct != null ? `${a.accuracy_pct}%` : a.accuracy}</span>
                                 </div>
                             </div>
                         ))}
                     </div>
+                    {fleet && (
+                        <p className="text-xs text-muted mt-3" style={{ marginBottom: 0 }}>
+                            توفير تقديري للتكلفة: {fleet.cost_savings_sar_month_estimate?.toLocaleString()} ر.س/شهر — برو بلس: {fleet.tenants_on_pro_plus} مؤسسة
+                        </p>
+                    )}
                 </div>
             )}
         </div>

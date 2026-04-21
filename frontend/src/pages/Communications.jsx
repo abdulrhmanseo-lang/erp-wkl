@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { chatMessages } from '../data/mockData';
-import { FiSend, FiPaperclip, FiSmile, FiUser, FiCpu, FiSearch, FiPhone, FiMoreVertical } from 'react-icons/fi';
+import { FiSend, FiPaperclip, FiSmile, FiUser, FiCpu, FiSearch, FiPhone, FiMoreVertical, FiZap } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 const contacts = [
     { id: 1, name: 'محمد الحربي', lastMsg: 'أريد حجز موعد لغداً', time: '10:31 ص', unread: 2, online: true },
@@ -14,6 +15,8 @@ export default function Communications() {
     const [activeContact, setActiveContact] = useState(contacts[0]);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState(chatMessages);
+    const [aiSuggestion, setAiSuggestion] = useState('');
+    const [suggestLoading, setSuggestLoading] = useState(false);
 
     const handleSend = () => {
         if (!message.trim()) return;
@@ -25,6 +28,29 @@ export default function Communications() {
             time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
         }]);
         setMessage('');
+        setAiSuggestion('');
+    };
+
+    const lastCustomerText = [...messages].reverse().find((m) => m.sender === 'customer')?.text || '';
+
+    const fetchAiReply = async () => {
+        if (!lastCustomerText.trim()) return;
+        setSuggestLoading(true);
+        try {
+            const res = await apiFetch('/ai/communications/suggest-reply', {
+                method: 'POST',
+                body: JSON.stringify({
+                    last_customer_message: lastCustomerText,
+                    contact_name: activeContact.name,
+                }),
+            });
+            const data = res.ok ? await res.json() : null;
+            setAiSuggestion(data?.suggested_reply || '');
+        } catch {
+            setAiSuggestion('');
+        } finally {
+            setSuggestLoading(false);
+        }
     };
 
     return (
@@ -104,9 +130,24 @@ export default function Communications() {
                         ))}
                     </div>
 
+                    <div className="p-3" style={{ borderTop: '1px solid rgba(200,169,96,0.06)' }}>
+                        <button type="button" className="btn btn-sm btn-secondary mb-2" onClick={fetchAiReply} disabled={suggestLoading}>
+                            <FiZap size={14} /> {suggestLoading ? '…' : 'اقتراح رد ذكي'}
+                        </button>
+                        {aiSuggestion && (
+                            <div className="glass p-3" style={{ borderRadius: 'var(--radius-md)' }}>
+                                <div className="text-xs text-secondary mb-1">اقتراح وكيل الدعم</div>
+                                <p className="text-sm" style={{ margin: 0 }}>{aiSuggestion}</p>
+                                <button type="button" className="btn btn-sm btn-secondary mt-2" onClick={() => { setMessage(aiSuggestion); }}>
+                                    نسخ إلى حقل الإرسال
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     <div className="chat-input-area">
-                        <button className="btn btn-icon btn-ghost"><FiPaperclip size={18} /></button>
-                        <button className="btn btn-icon btn-ghost"><FiSmile size={18} /></button>
+                        <button type="button" className="btn btn-icon btn-ghost"><FiPaperclip size={18} /></button>
+                        <button type="button" className="btn btn-icon btn-ghost"><FiSmile size={18} /></button>
                         <input
                             type="text"
                             className="chat-input"

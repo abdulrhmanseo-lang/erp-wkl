@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { clinicData, realEstateData, workshopData, ecommerceData } from '../data/mockData';
-import { FiUsers, FiCalendar, FiClock, FiPhone, FiHome, FiTrendingUp, FiDollarSign, FiTool, FiPackage, FiShoppingCart, FiAlertTriangle } from 'react-icons/fi';
+import { FiUsers, FiCalendar, FiClock, FiPhone, FiHome, FiTrendingUp, FiDollarSign, FiTool, FiPackage, FiShoppingCart, FiAlertTriangle, FiCpu } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 function ClinicModule() {
     return (
@@ -130,6 +132,23 @@ function EcommerceModule() {
 export default function SectorModule() {
     const { user } = useAuth();
     const sector = user?.sector || 'clinic';
+    const [brief, setBrief] = useState(null);
+
+    useEffect(() => {
+        let c = false;
+        (async () => {
+            try {
+                const res = await apiFetch(`/ai/sector-brief?sector=${encodeURIComponent(sector)}`);
+                if (!res.ok || c) return;
+                setBrief(await res.json());
+            } catch {
+                /* ignore */
+            }
+        })();
+        return () => {
+            c = true;
+        };
+    }, [sector]);
 
     const titles = {
         clinic: { name: 'وحدة العيادات', desc: 'إدارة المرضى والمواعيد', icon: '🧑‍⚕️' },
@@ -148,6 +167,15 @@ export default function SectorModule() {
                     <p className="text-secondary">{info.desc}</p>
                 </div>
             </div>
+            {brief && (
+                <div className="glass-card mb-6">
+                    <h3 className="mb-2 text-sm flex items-center gap-2"><FiCpu /> لمحة القطاع من الوكلاء</h3>
+                    <p className="text-sm" style={{ margin: '0 0 8px' }}>{brief.brief}</p>
+                    <p className="text-xs text-muted" style={{ margin: 0 }}>
+                        مؤشرات للمتابعة: {(brief.kpis_watch || []).join('، ')}
+                    </p>
+                </div>
+            )}
             {sector === 'clinic' && <ClinicModule />}
             {sector === 'real_estate' && <RealEstateModule />}
             {sector === 'workshop' && <WorkshopModule />}

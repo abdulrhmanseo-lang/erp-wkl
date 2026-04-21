@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react';
 import { Line, Doughnut } from 'react-chartjs-2';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement,
@@ -5,17 +6,11 @@ import {
 } from 'chart.js';
 import { dashboardData } from '../data/mockData';
 import { FiTrendingUp, FiTrendingDown, FiUsers, FiShoppingCart, FiDollarSign, FiTarget, FiZap, FiArrowLeft } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend, ArcElement);
 
 const formatNumber = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : n;
-
-const kpis = [
-    { label: 'إيرادات اليوم', value: dashboardData.revenue.today, prefix: '', suffix: ' ر.س', trend: dashboardData.revenue.trend, icon: FiDollarSign, color: '#C8A960' },
-    { label: 'إيرادات الشهر', value: dashboardData.revenue.month, prefix: '', suffix: ' ر.س', trend: dashboardData.revenue.trend, icon: FiTrendingUp, color: '#34D399' },
-    { label: 'العملاء', value: dashboardData.customers.total, prefix: '', suffix: '', trend: dashboardData.customers.trend, icon: FiUsers, color: '#FBBF24' },
-    { label: 'الطلبات', value: dashboardData.orders.total, prefix: '', suffix: '', trend: dashboardData.orders.trend, icon: FiShoppingCart, color: '#F87171' },
-];
 
 const chartOptions = {
     responsive: true,
@@ -46,11 +41,63 @@ const chartOptions = {
 };
 
 export default function Dashboard() {
+    const [aiInsights, setAiInsights] = useState(dashboardData.aiInsights);
+    const [aiMeta, setAiMeta] = useState(null);
+    const [liveDashboard, setLiveDashboard] = useState(null);
+
+    const refreshAi = useCallback(async () => {
+        try {
+            const [insRes, dashRes] = await Promise.all([
+                apiFetch('/ai/insights'),
+                apiFetch('/dashboard/'),
+            ]);
+            if (insRes.ok) {
+                const j = await insRes.json();
+                const mapped = (j.insights || []).map((x) => ({
+                    id: x.id,
+                    type: x.type,
+                    text: x.text,
+                    action: x.action,
+                    priority: x.priority,
+                    confidence: x.confidence,
+                }));
+                setAiInsights(mapped.length ? mapped : dashboardData.aiInsights);
+                setAiMeta(j.meta || null);
+            }
+            if (dashRes.ok) {
+                const d = await dashRes.json();
+                setLiveDashboard(d);
+            }
+        } catch {
+            setAiInsights(dashboardData.aiInsights);
+        }
+    }, []);
+
+    useEffect(() => {
+        refreshAi();
+    }, [refreshAi]);
+
+    const revenueToday = liveDashboard?.revenue?.paid != null
+        ? Math.round(Number(liveDashboard.revenue.paid) * 0.12)
+        : dashboardData.revenue.today;
+    const revenueMonth = liveDashboard?.revenue?.total != null
+        ? Math.round(Number(liveDashboard.revenue.total))
+        : dashboardData.revenue.month;
+    const customersTotal = liveDashboard?.customers?.total ?? dashboardData.customers.total;
+    const ordersTotal = liveDashboard?.orders?.total ?? dashboardData.orders.total;
+
+    const kpisLive = [
+        { label: 'إيرادات اليوم', value: revenueToday, prefix: '', suffix: ' ر.س', trend: dashboardData.revenue.trend, icon: FiDollarSign, color: '#C8A960' },
+        { label: 'إيرادات الشهر', value: revenueMonth, prefix: '', suffix: ' ر.س', trend: liveDashboard?.revenue?.trend ?? dashboardData.revenue.trend, icon: FiTrendingUp, color: '#34D399' },
+        { label: 'العملاء', value: customersTotal, prefix: '', suffix: '', trend: dashboardData.customers.trend, icon: FiUsers, color: '#FBBF24' },
+        { label: 'الطلبات', value: ordersTotal, prefix: '', suffix: '', trend: liveDashboard?.orders?.trend ?? dashboardData.orders.trend, icon: FiShoppingCart, color: '#F87171' },
+    ];
+
     const salesData = {
-        labels: dashboardData.salesChart.labels,
+        labels: liveDashboard?.sales_chart?.labels || dashboardData.salesChart.labels,
         datasets: [{
             label: 'المبيعات',
-            data: dashboardData.salesChart.data,
+            data: liveDashboard?.sales_chart?.data || dashboardData.salesChart.data,
             borderColor: '#C8A960',
             backgroundColor: 'rgba(200, 169, 96, 0.1)',
             fill: true,
@@ -92,7 +139,7 @@ export default function Dashboard() {
                 </div>
                 <div className="header-actions">
                     <button className="btn btn-secondary btn-sm">تقرير PDF</button>
-                    <button className="btn btn-primary btn-sm">
+                    <button type="button" className="btn btn-primary btn-sm" onClick={() => refreshAi()}>
                         <FiZap size={16} /> تحليل AI
                     </button>
                 </div>
@@ -100,7 +147,7 @@ export default function Dashboard() {
 
             {/* KPI Cards */}
             <div className="kpi-grid stagger-children">
-                {kpis.map((kpi, i) => {
+                {kpisLive.map((kpi, i) => {
                     const Icon = kpi.icon;
                     return (
                         <div key={i} className="kpi-card glass-card">
@@ -125,15 +172,25 @@ export default function Dashboard() {
             <div className="ai-insights-panel glass-card">
                 <div className="panel-header">
                     <h3><FiZap className="text-gradient" /> رؤى الذكاء الاصطناعي</h3>
-                    <span className="badge badge-primary">{dashboardData.aiInsights.length} توصية</span>
+                    <span className="badge badge-primary">{aiInsights.length} توصية</span>
                 </div>
+                {aiMeta && (
+                    <p className="text-xs text-muted mb-3" style={{ paddingInline: '1rem' }}>
+                        نموذج: {aiMeta.model_tier} — زمن تقديري {aiMeta.latency_ms_estimate}ms — حداثة البيانات ~{aiMeta.data_freshness_minutes} د
+                    </p>
+                )}
                 <div className="insights-list">
-                    {dashboardData.aiInsights.map((insight) => (
+                    {aiInsights.map((insight) => (
                         <div key={insight.id} className={`insight-item insight-${insight.type}`}>
                             <div className="insight-content">
                                 <p className="insight-text">{insight.text}</p>
                                 <p className="insight-action">
                                     <FiTarget size={14} /> {insight.action}
+                                    {insight.confidence != null && (
+                                        <span className="text-xs text-muted" style={{ marginInlineStart: 8 }}>
+                                            ثقة {Math.round(Number(insight.confidence) * 100)}%
+                                        </span>
+                                    )}
                                 </p>
                             </div>
                             <button className="btn btn-sm btn-ghost">
@@ -171,7 +228,7 @@ export default function Dashboard() {
                 <div className="activity-card glass-card" style={{ flex: 1 }}>
                     <h4>النشاط الأخير</h4>
                     <div className="activity-list">
-                        {dashboardData.activityFeed.map((item) => (
+                        {(liveDashboard?.activity_feed || dashboardData.activityFeed).map((item) => (
                             <div key={item.id} className="activity-item">
                                 <div className={`activity-dot activity-${item.type}`} />
                                 <div className="activity-content">

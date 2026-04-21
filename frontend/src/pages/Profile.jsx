@@ -1,10 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiMail, FiShield, FiKey, FiSmartphone, FiClock, FiCheckCircle } from 'react-icons/fi';
+import { FiUser, FiMail, FiShield, FiKey, FiSmartphone, FiClock, FiCheckCircle, FiZap } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 export default function Profile() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('overview');
+    const [productivity, setProductivity] = useState(null);
+
+    useEffect(() => {
+        let c = false;
+        (async () => {
+            try {
+                const res = await apiFetch('/ai/user-productivity');
+                if (!res.ok || c) return;
+                setProductivity(await res.json());
+            } catch {
+                /* ignore */
+            }
+        })();
+        return () => {
+            c = true;
+        };
+    }, []);
 
     return (
         <div className="page-enter">
@@ -66,6 +84,19 @@ export default function Profile() {
                     </div>
                     <div className="glass-card">
                         <h3 className="mb-4">نشاط الحساب</h3>
+                        {productivity && (
+                            <div className="glass p-3 mb-4" style={{ borderRadius: 'var(--radius-md)' }}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <FiZap size={14} />
+                                    <span className="text-sm font-semibold">مؤشر تركيز مقترح: {productivity.focus_score}/100</span>
+                                </div>
+                                <ul className="text-xs text-secondary" style={{ margin: 0, paddingInlineStart: '1.1rem' }}>
+                                    {(productivity.tips || []).map((t, i) => (
+                                        <li key={i} style={{ marginBottom: 4 }}>{t}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                         <div className="timeline">
                             <div className="timeline-item">
                                 <div className="timeline-icon bg-success-light text-success"><FiCheckCircle size={14} /></div>

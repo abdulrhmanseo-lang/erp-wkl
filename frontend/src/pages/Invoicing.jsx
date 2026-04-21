@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiDownload, FiEye, FiTrash2, FiDollarSign, FiClock, FiAlertTriangle, FiCheck } from 'react-icons/fi';
+import { FiPlus, FiEye, FiTrash2, FiDollarSign, FiClock, FiAlertTriangle, FiCheck, FiZap } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+import { apiV1, apiFetch } from '../lib/api';
 
 const statusMap = {
     paid: { label: 'مدفوعة', badge: 'badge-success', icon: FiCheck },
@@ -20,10 +19,11 @@ export default function Invoicing() {
     const [clientPhone, setClientPhone] = useState('');
     const [amount, setAmount] = useState('');
     const [notes, setNotes] = useState('');
+    const [copilot, setCopilot] = useState(null);
 
     const fetchInvoices = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/v1/invoices`);
+            const res = await fetch(apiV1('/invoices/'));
             const data = await res.json();
             setInvoices(data.invoices || []);
         } catch (error) {
@@ -35,6 +35,22 @@ export default function Invoicing() {
         fetchInvoices();
     }, []);
 
+    useEffect(() => {
+        let c = false;
+        (async () => {
+            try {
+                const res = await apiFetch('/ai/invoicing-copilot');
+                if (!res.ok || c) return;
+                setCopilot(await res.json());
+            } catch {
+                /* ignore */
+            }
+        })();
+        return () => {
+            c = true;
+        };
+    }, []);
+
     const handleCreate = async () => {
         if (!clientName || !amount) {
             alert('يجب إدخال اسم العميل والمبلغ');
@@ -42,7 +58,7 @@ export default function Invoicing() {
         }
 
         try {
-            const res = await fetch(`${API_URL}/api/v1/invoices/`, {
+            const res = await fetch(apiV1('/invoices/'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -106,6 +122,21 @@ export default function Invoicing() {
                     <div className="text-2xl font-bold">{totalOverdue.toLocaleString()} ر.س</div>
                 </div>
             </div>
+
+            {copilot && (
+                <div className="glass-card mb-6">
+                    <h3 className="mb-3 flex items-center gap-2">
+                        <FiZap className="text-gradient" /> مساعد الفواتير والتحصيل
+                    </h3>
+                    <ul className="text-sm text-secondary" style={{ margin: '0 0 8px', paddingInlineStart: '1.25rem' }}>
+                        {(copilot.dunning || []).map((line, i) => (
+                            <li key={i} style={{ marginBottom: 6 }}>{line}</li>
+                        ))}
+                    </ul>
+                    <p className="text-sm">{copilot.cash_flow}</p>
+                    <p className="text-xs text-muted mt-2">{copilot.vat_tip}</p>
+                </div>
+            )}
 
             {/* Create Invoice Form */}
             {showCreate && (

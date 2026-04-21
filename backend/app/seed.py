@@ -43,6 +43,20 @@ def seed_db():
         db.add(admin_user)
         db.commit()
         print("Created default admin user (email: admin@smartops.com, password: admin123).")
+
+    # Check if employee user exists
+    emp_user = db.query(User).filter(User.email == "emp@smartops.com").first()
+    if not emp_user:
+        emp_user = User(
+            email="emp@smartops.com",
+            hashed_password=get_password_hash("emp123"),
+            full_name="Employee (Test)",
+            role=UserRole.EMPLOYEE,
+            tenant_id=tenant.id
+        )
+        db.add(emp_user)
+        db.commit()
+        print("Created default employee user (email: emp@smartops.com, password: emp123).")
     
     print("Database seeding completed!")
     db.close()

@@ -1,6 +1,26 @@
-import { FiSave, FiUpload, FiLink, FiShield, FiUsers, FiBell } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
+import { FiSave, FiUpload, FiLink, FiShield, FiUsers, FiBell, FiActivity } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 export default function Settings() {
+    const [health, setHealth] = useState(null);
+
+    useEffect(() => {
+        let c = false;
+        (async () => {
+            try {
+                const res = await apiFetch('/ai/integration-health');
+                if (!res.ok || c) return;
+                setHealth(await res.json());
+            } catch {
+                /* ignore */
+            }
+        })();
+        return () => {
+            c = true;
+        };
+    }, []);
+
     return (
         <div className="page-enter">
             <div className="page-header">
@@ -93,6 +113,22 @@ export default function Settings() {
                     </div>
                 </div>
             </div>
+
+            {health && (
+                <div className="glass-card mt-6">
+                    <h3 className="mb-4"><FiActivity /> صحة التكامل والذكاء (لحظي)</h3>
+                    <div className="grid grid-2 gap-4">
+                        {Object.entries(health).map(([key, val]) => (
+                            <div key={key} className="glass p-4 flex items-center justify-between" style={{ borderRadius: 'var(--radius-md)' }}>
+                                <span className="font-semibold text-sm">{key.replace(/_/g, ' ')}</span>
+                                <span className={`badge ${val.status === 'ok' ? 'badge-success' : val.status === 'degraded' ? 'badge-warning' : 'badge-danger'}`}>
+                                    {val.status || '—'}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

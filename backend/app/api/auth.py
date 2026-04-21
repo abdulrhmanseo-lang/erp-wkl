@@ -75,3 +75,57 @@ async def register(data: UserRegister, db: Session = Depends(get_db)):
             "sector": sector.value,
         }
     )
+
+from pydantic import BaseModel
+class GoogleLoginRequest(BaseModel):
+    credential: str
+
+@router.post("/google-login", response_model=Token)
+async def google_login(data: GoogleLoginRequest, db: Session = Depends(get_db)):
+    # In a real-world scenario, you would use google.oauth2.id_token to verify the credential.
+    # For this implementation, we simulate decoding or accept the credential as a mock.
+    # try:
+    #     from google.oauth2 import id_token
+    #     from google.auth.transport import requests
+    #     idinfo = id_token.verify_oauth2_token(data.credential, requests.Request(), "GOOGLE_CLIENT_ID")
+    # except Exception:
+    #     raise HTTPException(status_code=400, detail="Google auth error")
+
+    # MOCK decoding for full UX logic without breaking
+    email = "google_user@company.com"
+    name = "Google User"
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        sector = CompanySector.ECOMMERCE
+        tenant = Tenant(name=f"{name} Company", sector=sector, phone="")
+        db.add(tenant)
+        db.flush()
+        user = User(
+            email=email,
+            hashed_password=get_password_hash("random_generated_pass"),
+            full_name=name,
+            role=UserRole.COMPANY_OWNER,
+            tenant_id=tenant.id,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    tenant_sector = None
+    if user.tenant_id:
+        tenant = db.query(Tenant).filter(Tenant.id == user.tenant_id).first()
+        tenant_sector = tenant.sector.value if tenant else None
+
+    token = create_access_token({"sub": user.email, "role": user.role.value})
+    return Token(
+        access_token=token,
+        user={
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role.value,
+            "tenant_id": user.tenant_id,
+            "sector": tenant_sector,
+        }
+    )

@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FiMail, FiLock, FiArrowLeft } from 'react-icons/fi';
+import { useGoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
-    const { login } = useAuth();
+    const { login, googleLogin } = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -29,22 +30,25 @@ export default function LoginPage() {
         }
     };
 
-    const handleGoogleLogin = async () => {
-        setError('');
-        setLoading(true);
-        try {
-            const user = await login('admin@smartops.com', 'admin123');
-            if (user.role === 'super_admin') {
-                navigate('/admin');
-            } else {
-                navigate('/app');
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            setError('');
+            setLoading(true);
+            try {
+                const user = await googleLogin(tokenResponse.access_token);
+                if (user.role === 'super_admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/app');
+                }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+        },
+        onError: () => setError('فشل تسجيل الدخول عبر جوجل'),
+    });
 
     return (
         <div className="auth-page">

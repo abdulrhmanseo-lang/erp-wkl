@@ -1,12 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { notifications as notifData } from '../data/mockData';
-import { FiCheck, FiCheckCircle, FiBell, FiFilter } from 'react-icons/fi';
+import { FiCheck, FiCheckCircle, FiBell } from 'react-icons/fi';
+import { apiFetch } from '../lib/api';
 
 const typeIcons = { warning: '⚠️', success: '✅', danger: '🔴', info: 'ℹ️' };
 
 export default function Notifications() {
     const [notifs, setNotifs] = useState(notifData);
     const [filter, setFilter] = useState('all');
+
+    useEffect(() => {
+        let c = false;
+        (async () => {
+            try {
+                const res = await apiFetch('/ai/notifications-feed');
+                if (!res.ok || c) return;
+                const d = await res.json();
+                const extra = d.items || [];
+                if (extra.length) setNotifs((prev) => [...extra, ...prev]);
+            } catch {
+                /* يبقى المحلي */
+            }
+        })();
+        return () => {
+            c = true;
+        };
+    }, []);
 
     const markAllRead = () => setNotifs(notifs.map(n => ({ ...n, read: true })));
     const filtered = filter === 'all' ? notifs : filter === 'unread' ? notifs.filter(n => !n.read) : notifs.filter(n => n.type === filter);

@@ -78,7 +78,7 @@ export const sidebarMenu = [
   { id: 'sector', label: 'وحدة القطاع', icon: 'sector', path: '/app/sector' },
   { id: 'notifications', label: 'الإشعارات', icon: 'notifications', path: '/app/notifications' },
   { id: 'billing', label: 'الفوترة والاشتراك', icon: 'billing', path: '/app/billing' },
-  { id: 'settings', label: 'الإعدادات', icon: 'settings', path: '/app/settings' },
+  { id: 'settings', label: 'الإعدادات', icon: 'settings', path: '/settings' },
 ];
 
 export const adminMenu = [

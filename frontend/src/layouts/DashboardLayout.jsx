@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
+import AIFloatingChat from '../components/AIFloatingChat';
 import { FiGrid, FiCpu, FiMessageCircle, FiFileText, FiSettings } from 'react-icons/fi';
 
 const mobileNavItems = [
@@ -50,6 +51,7 @@ export default function DashboardLayout() {
                     })}
                 </div>
             </nav>
+            <AIFloatingChat />
         </div>
     );
 }
