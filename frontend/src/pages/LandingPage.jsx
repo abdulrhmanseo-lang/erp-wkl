@@ -1,7 +1,33 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { features, testimonials, pricingPlans } from '../data/mockData';
-import { FiArrowLeft, FiCheck, FiMenu, FiX } from 'react-icons/fi';
+import { pricingPlans } from '../data/mockData';
+import {
+    FiArrowLeft, FiCheck, FiMenu, FiX,
+    FiCpu, FiMessageCircle, FiBarChart2, FiFileText, FiGlobe, FiTarget,
+    FiActivity, FiBriefcase, FiTool, FiShoppingCart, FiUser
+} from 'react-icons/fi';
+
+const landingFeatures = [
+    { id: 1, icon: <FiCpu size={32} color="var(--gold)" />, title: 'ذكاء اصطناعي متقدم', description: 'وكلاء ذكاء اصطناعي يحللون بياناتك ويقدمون توصيات عملية لزيادة أرباحك' },
+    { id: 2, icon: <FiMessageCircle size={32} color="var(--blue)" />, title: 'تكامل واتساب', description: 'ردود تلقائية ذكية وإدارة محادثات العملاء مباشرة من لوحة التحكم' },
+    { id: 3, icon: <FiBarChart2 size={32} color="var(--green)" />, title: 'تحليلات متقدمة', description: 'رسوم بيانية تفاعلية وتقارير مفصلة لفهم أداء عملك بعمق' },
+    { id: 4, icon: <FiFileText size={32} color="var(--gold)" />, title: 'فوترة ذكية', description: 'إنشاء فواتير متوافقة مع ضريبة القيمة المضافة وتتبع المدفوعات تلقائياً' },
+    { id: 5, icon: <FiGlobe size={32} color="var(--blue)" />, title: 'تسويق آلي', description: 'حملات تسويقية مدعومة بالذكاء الاصطناعي مع نصوص عربية احترافية' },
+    { id: 6, icon: <FiTarget size={32} color="var(--green)" />, title: 'محرك القرارات', description: 'تنبيهات ذكية وتسعير ديناميكي واقتراحات لتحسين أداء عملك' },
+];
+
+const landingSectors = [
+    { icon: <FiActivity size={28} />, title: 'العيادات', desc: 'إدارة المرضى والمواعيد والتذكيرات' },
+    { icon: <FiBriefcase size={28} />, title: 'العقارات', desc: 'تتبع العقارات والعملاء والعمولات' },
+    { icon: <FiTool size={28} />, title: 'الورش', desc: 'تتبع الصيانة والمخزون والعملاء' },
+    { icon: <FiShoppingCart size={28} />, title: 'التجارة الإلكترونية', desc: 'إدارة المنتجات والطلبات والمبيعات' },
+];
+
+const landingTestimonials = [
+    { id: 1, name: 'د. سارة الحربي', role: 'مؤسسة عيادة لمسة جمال', text: 'وكل غيّر طريقة إدارتنا بالكامل. أصبحت المواعيد تُدار تلقائياً والمرضى يتلقون تذكيرات عبر واتساب. وفّرنا 60% من وقت الإدارة.', avatar: <FiUser size={24} />, sector: 'عيادة' },
+    { id: 2, name: 'عبدالله المطيري', role: 'مدير مجموعة دار العقار', text: 'تتبع العملاء المحتملين والعمولات أصبح سهلاً جداً. الذكاء الاصطناعي يقترح أفضل العقارات لكل عميل تلقائياً.', avatar: <FiUser size={24} />, sector: 'عقارات' },
+    { id: 3, name: 'فهد القحطاني', role: 'صاحب ورشة الخليج للسيارات', text: 'تتبع الصيانة وقطع الغيار أصبح منظّماً. العملاء يتلقون تذكيرات بمواعيد الصيانة وهذا زاد ولاءهم بشكل كبير.', avatar: <FiUser size={24} />, sector: 'ورشة' },
+];
 
 export default function LandingPage() {
     const navigate = useNavigate();
@@ -36,7 +62,7 @@ export default function LandingPage() {
                 <div className="container">
                     <div className="hero-content animate-fade-in-up">
                         <div className="hero-badge glass">
-                            <span>🇸🇦</span> منصة سعودية 100% مدعومة بالذكاء الاصطناعي
+                            <span style={{ fontSize: '1.2rem', color: 'var(--gold)', marginLeft: '8px' }}>🇸🇦</span> منصة سعودية 100% مدعومة بالذكاء الاصطناعي
                         </div>
                         <h1 className="hero-title">
                             شغّل شركتك
@@ -117,9 +143,11 @@ export default function LandingPage() {
                         <p className="text-secondary">أدوات متقدمة مدعومة بالذكاء الاصطناعي مصممة خصيصاً للسوق السعودي</p>
                     </div>
                     <div className="features-grid stagger-children">
-                        {features.map((f) => (
-                            <div key={f.id} className="feature-card glass-card">
-                                <div className="feature-icon">{f.icon}</div>
+                        {landingFeatures.map((f) => (
+                            <div key={f.id} className="feature-card glass-card hover-glow">
+                                <div className="feature-icon-wrapper" style={{ padding: '20px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.03)', display: 'inline-flex', marginBottom: '16px', boxShadow: 'inset 0 0 20px rgba(200, 169, 96, 0.05)' }}>
+                                    {f.icon}
+                                </div>
                                 <h3 className="feature-title">{f.title}</h3>
                                 <p className="feature-desc text-secondary">{f.description}</p>
                             </div>
@@ -136,14 +164,9 @@ export default function LandingPage() {
                         <p className="text-secondary">وحدات متخصصة لكل نوع من الأعمال</p>
                     </div>
                     <div className="sectors-grid stagger-children">
-                        {[
-                            { icon: '🧑‍⚕️', title: 'العيادات', desc: 'إدارة المرضى والمواعيد والتذكيرات' },
-                            { icon: '🏗', title: 'العقارات', desc: 'تتبع العقارات والعملاء والعمولات' },
-                            { icon: '🚗', title: 'الورش', desc: 'تتبع الصيانة والمخزون والعملاء' },
-                            { icon: '🛒', title: 'التجارة الإلكترونية', desc: 'إدارة المنتجات والطلبات والمبيعات' },
-                        ].map((s, i) => (
-                            <div key={i} className="sector-card glass-card">
-                                <div className="sector-icon">{s.icon}</div>
+                        {landingSectors.map((s, i) => (
+                            <div key={i} className="sector-card glass-card hover-glow">
+                                <div className="sector-icon" style={{ color: 'var(--gold)' }}>{s.icon}</div>
                                 <h3>{s.title}</h3>
                                 <p className="text-secondary text-sm">{s.desc}</p>
                             </div>
@@ -160,9 +183,11 @@ export default function LandingPage() {
                         <p className="text-secondary">شركات سعودية حقيقية تثق بـ وكل</p>
                     </div>
                     <div className="testimonials-grid stagger-children">
-                        {testimonials.map((t) => (
+                        {landingTestimonials.map((t) => (
                             <div key={t.id} className="testimonial-card glass-card">
-                                <div className="testimonial-avatar">{t.avatar}</div>
+                                <div className="testimonial-avatar" style={{ padding: '12px', background: 'rgba(200,169,96,0.1)', borderRadius: '50%', color: 'var(--gold)', display: 'inline-flex', marginBottom: '10px' }}>
+                                    {t.avatar}
+                                </div>
                                 <p className="testimonial-text">"{t.text}"</p>
                                 <div className="testimonial-author">
                                     <span className="font-semibold">{t.name}</span>
