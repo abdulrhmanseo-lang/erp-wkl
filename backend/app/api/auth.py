@@ -42,10 +42,15 @@ async def register(data: UserRegister, db: Session = Depends(get_db)):
 
     # Create tenant
     sector = CompanySector(data.sector) if data.sector in [s.value for s in CompanySector] else CompanySector.ECOMMERCE
+    
+    tenant_name = data.company_name if data.company_name else data.full_name
     tenant = Tenant(
-        name=data.company_name,
+        name=tenant_name,
         sector=sector,
         phone=data.phone,
+        tenant_type=data.entity_type,
+        cr_number=data.cr_number,
+        tax_number=data.tax_number,
     )
     db.add(tenant)
     db.flush()

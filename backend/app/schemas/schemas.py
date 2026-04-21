@@ -15,7 +15,10 @@ class UserRegister(BaseModel):
     password: str
     full_name: str
     phone: Optional[str] = None
-    company_name: str
+    company_name: Optional[str] = None
+    entity_type: str = "company"
+    cr_number: Optional[str] = None
+    tax_number: Optional[str] = None
     sector: str
 
 

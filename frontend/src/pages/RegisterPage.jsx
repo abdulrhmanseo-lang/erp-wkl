@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiMail, FiLock, FiBriefcase, FiArrowLeft } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiBriefcase, FiArrowLeft, FiFileText, FiHash, FiShield } from 'react-icons/fi';
 
 const sectors = [
     { id: 'clinic', label: 'عيادة', icon: '🧑‍⚕️' },
     { id: 'real_estate', label: 'عقارات', icon: '🏗' },
     { id: 'workshop', label: 'ورشة', icon: '🚗' },
     { id: 'ecommerce', label: 'تجارة إلكترونية', icon: '🛒' },
+];
+
+const entityTypes = [
+    { id: 'company', label: 'شركة🏢' },
+    { id: 'establishment', label: 'مؤسسة🏪' },
+    { id: 'individual', label: 'فرد👩‍💻' }
 ];
 
 export default function RegisterPage() {
@@ -19,9 +25,12 @@ export default function RegisterPage() {
         name: '',
         email: '',
         password: '',
-        companyName: '',
-        sector: '',
         phone: '',
+        entityType: 'company',
+        companyName: '',
+        crNumber: '',
+        taxNumber: '',
+        sector: 'ecommerce',
     });
 
     const updateForm = (field, value) => setForm({ ...form, [field]: value });
@@ -34,7 +43,17 @@ export default function RegisterPage() {
         }
         setLoading(true);
         try {
-            await register(form);
+            await register({
+                full_name: form.name,
+                email: form.email,
+                password: form.password,
+                phone: form.phone,
+                entity_type: form.entityType,
+                company_name: form.entityType === 'individual' ? form.name : form.companyName,
+                cr_number: form.crNumber,
+                tax_number: form.taxNumber,
+                sector: form.sector
+            });
             navigate('/app');
         } catch (err) {
             console.error(err);
@@ -48,14 +67,14 @@ export default function RegisterPage() {
             <div className="bg-aurora" />
             <div className="bg-grid" />
             <div className="auth-container animate-fade-in-up">
-                <div className="auth-card glass-strong">
+                <div className="auth-card glass-strong" style={{ width: '100%', maxWidth: '500px' }}>
                     <div className="auth-header">
                         <div className="landing-logo justify-center mb-6">
                             <span className="wkl-brand">وكل</span>
                         </div>
-                        <h2>{step === 1 ? 'إنشاء حساب جديد' : 'بيانات الشركة'}</h2>
+                        <h2>{step === 1 ? 'إنشاء حساب جديد' : 'بيانات النشاط'}</h2>
                         <p className="text-secondary">
-                            {step === 1 ? 'أدخل بياناتك الشخصية للبدء' : 'أخبرنا عن شركتك'}
+                            {step === 1 ? 'أدخل بياناتك الشخصية للبدء' : 'أخبرنا عن نشاطك التجاري'}
                         </p>
                         <div className="step-indicator">
                             <div className={`step-dot ${step >= 1 ? 'step-active' : ''}`}>1</div>
@@ -82,6 +101,10 @@ export default function RegisterPage() {
                                     </div>
                                 </div>
                                 <div className="input-group">
+                                    <label>رقم الجوال (اختياري)</label>
+                                    <input type="tel" className="input" placeholder="05xxxxxxxx" value={form.phone} onChange={(e) => updateForm('phone', e.target.value)} dir="ltr" />
+                                </div>
+                                <div className="input-group">
                                     <label>كلمة المرور</label>
                                     <div className="input-icon-wrapper">
                                         <FiLock className="input-icon" />
@@ -92,18 +115,52 @@ export default function RegisterPage() {
                         ) : (
                             <>
                                 <div className="input-group">
-                                    <label>اسم الشركة</label>
-                                    <div className="input-icon-wrapper">
-                                        <FiBriefcase className="input-icon" />
-                                        <input type="text" className="input input-with-icon" placeholder="اسم شركتك" value={form.companyName} onChange={(e) => updateForm('companyName', e.target.value)} required />
+                                    <label>نوع النشاط</label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                                        {entityTypes.map(t => (
+                                            <button
+                                                key={t.id} type="button"
+                                                className={`btn ${form.entityType === t.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                                                onClick={() => updateForm('entityType', t.id)}
+                                            >
+                                                {t.label}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
-                                <div className="input-group">
-                                    <label>رقم الجوال (اختياري)</label>
-                                    <input type="tel" className="input" placeholder="05xxxxxxxx" value={form.phone} onChange={(e) => updateForm('phone', e.target.value)} dir="ltr" />
-                                </div>
-                                <div className="input-group">
-                                    <label>القطاع</label>
+
+                                {form.entityType !== 'individual' && (
+                                    <div className="input-group">
+                                        <label>{form.entityType === 'company' ? 'اسم الشركة' : 'اسم المؤسسة'}</label>
+                                        <div className="input-icon-wrapper">
+                                            <FiBriefcase className="input-icon" />
+                                            <input type="text" className="input input-with-icon" placeholder="الاسم التجاري" value={form.companyName} onChange={(e) => updateForm('companyName', e.target.value)} required />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {(form.entityType === 'company' || form.entityType === 'establishment') && (
+                                    <div className="input-group">
+                                        <label>السجل التجاري (اختياري)</label>
+                                        <div className="input-icon-wrapper">
+                                            <FiFileText className="input-icon" />
+                                            <input type="text" className="input input-with-icon" placeholder="1010xxxxxx" value={form.crNumber} onChange={(e) => updateForm('crNumber', e.target.value)} />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {form.entityType === 'company' && (
+                                    <div className="input-group">
+                                        <label>الرقم الضريبي (اختياري)</label>
+                                        <div className="input-icon-wrapper">
+                                            <FiHash className="input-icon" />
+                                            <input type="text" className="input input-with-icon" placeholder="30xxxxxxxx" value={form.taxNumber} onChange={(e) => updateForm('taxNumber', e.target.value)} />
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="input-group mb-5">
+                                    <label>القطاع المستهدف</label>
                                     <div className="sector-grid">
                                         {sectors.map((s) => (
                                             <button

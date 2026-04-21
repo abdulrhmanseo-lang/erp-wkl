@@ -31,6 +31,9 @@ class Tenant(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
+    tenant_type = Column(String(50), default="company") # individual, establishment, company
+    cr_number = Column(String(50), nullable=True)
+    tax_number = Column(String(50), nullable=True)
     sector = Column(Enum(CompanySector), nullable=False)
     logo_url = Column(String(500), nullable=True)
     phone = Column(String(20), nullable=True)
