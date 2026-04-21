@@ -11,7 +11,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, 
 const formatNumber = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : n;
 
 const kpis = [
-    { label: 'إيرادات اليوم', value: dashboardData.revenue.today, prefix: '', suffix: ' ر.س', trend: dashboardData.revenue.trend, icon: FiDollarSign, color: '#0A84FF' },
+    { label: 'إيرادات اليوم', value: dashboardData.revenue.today, prefix: '', suffix: ' ر.س', trend: dashboardData.revenue.trend, icon: FiDollarSign, color: '#C8A960' },
     { label: 'إيرادات الشهر', value: dashboardData.revenue.month, prefix: '', suffix: ' ر.س', trend: dashboardData.revenue.trend, icon: FiTrendingUp, color: '#34D399' },
     { label: 'العملاء', value: dashboardData.customers.total, prefix: '', suffix: '', trend: dashboardData.customers.trend, icon: FiUsers, color: '#FBBF24' },
     { label: 'الطلبات', value: dashboardData.orders.total, prefix: '', suffix: '', trend: dashboardData.orders.trend, icon: FiShoppingCart, color: '#F87171' },
@@ -24,8 +24,8 @@ const chartOptions = {
         legend: { display: false },
         tooltip: {
             rtl: true,
-            titleFont: { family: 'Cairo' },
-            bodyFont: { family: 'Cairo' },
+            titleFont: { family: 'IBM Plex Sans Arabic' },
+            bodyFont: { family: 'IBM Plex Sans Arabic' },
             backgroundColor: 'rgba(17, 24, 39, 0.95)',
             borderColor: 'rgba(255,255,255,0.1)',
             borderWidth: 1,
@@ -36,11 +36,11 @@ const chartOptions = {
     scales: {
         x: {
             grid: { color: 'rgba(255,255,255,0.05)' },
-            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'Cairo' } },
+            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'IBM Plex Sans Arabic' } },
         },
         y: {
             grid: { color: 'rgba(255,255,255,0.05)' },
-            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'Cairo' } },
+            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'IBM Plex Sans Arabic' } },
         },
     },
 };
@@ -51,12 +51,12 @@ export default function Dashboard() {
         datasets: [{
             label: 'المبيعات',
             data: dashboardData.salesChart.data,
-            borderColor: '#0A84FF',
-            backgroundColor: 'rgba(10, 132, 255, 0.1)',
+            borderColor: '#C8A960',
+            backgroundColor: 'rgba(200, 169, 96, 0.1)',
             fill: true,
             tension: 0.4,
             pointRadius: 4,
-            pointBackgroundColor: '#0A84FF',
+            pointBackgroundColor: '#C8A960',
         }],
     };
 
@@ -78,7 +78,7 @@ export default function Dashboard() {
         labels: ['مبيعات', 'عملاء محتملين', 'زوار'],
         datasets: [{
             data: [35, 25, 40],
-            backgroundColor: ['#0A84FF', '#34D399', '#FBBF24'],
+            backgroundColor: ['#C8A960', '#34D399', '#FBBF24'],
             borderWidth: 0,
         }],
     };

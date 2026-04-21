@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { invoices } from '../data/mockData';
+import { useState, useEffect } from 'react';
 import { FiPlus, FiDownload, FiEye, FiTrash2, FiDollarSign, FiClock, FiAlertTriangle, FiCheck } from 'react-icons/fi';
+import { useAuth } from '../context/AuthContext';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const statusMap = {
     paid: { label: 'مدفوعة', badge: 'badge-success', icon: FiCheck },
@@ -9,11 +11,64 @@ const statusMap = {
 };
 
 export default function Invoicing() {
+    const { user } = useAuth();
+    const [invoices, setInvoices] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
 
-    const totalPaid = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0);
-    const totalPending = invoices.filter(i => i.status === 'pending').reduce((s, i) => s + i.amount, 0);
-    const totalOverdue = invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.amount, 0);
+    // Form state
+    const [clientName, setClientName] = useState('');
+    const [clientPhone, setClientPhone] = useState('');
+    const [amount, setAmount] = useState('');
+    const [notes, setNotes] = useState('');
+
+    const fetchInvoices = async () => {
+        try {
+            const res = await fetch(`${API_URL}/api/v1/invoices`);
+            const data = await res.json();
+            setInvoices(data.invoices || []);
+        } catch (error) {
+            console.error("Error fetching invoices:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchInvoices();
+    }, []);
+
+    const handleCreate = async () => {
+        if (!clientName || !amount) {
+            alert('يجب إدخال اسم العميل والمبلغ');
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/api/v1/invoices/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tenant_id: user?.tenant_id || 1,
+                    client_name: clientName,
+                    client_phone: clientPhone,
+                    amount: parseFloat(amount),
+                    notes: notes,
+                })
+            });
+            if (res.ok) {
+                setShowCreate(false);
+                setClientName('');
+                setClientPhone('');
+                setAmount('');
+                setNotes('');
+                fetchInvoices();
+            }
+        } catch (error) {
+            console.error("Error creating invoice:", error);
+        }
+    };
+
+    const totalPaid = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0);
+    const totalPending = invoices.filter(i => i.status === 'pending').reduce((s, i) => s + i.total, 0);
+    const totalOverdue = invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.total, 0);
 
     return (
         <div className="page-enter">
@@ -57,17 +112,28 @@ export default function Invoicing() {
                 <div className="glass-card mb-6 animate-fade-in-up">
                     <h3 className="mb-4">إنشاء فاتورة جديدة</h3>
                     <div className="grid grid-2 gap-4">
-                        <div className="input-group"><label>اسم العميل</label><input className="input" placeholder="اسم الشركة أو العميل" /></div>
-                        <div className="input-group"><label>رقم الجوال</label><input className="input" placeholder="05xxxxxxxx" dir="ltr" /></div>
-                        <div className="input-group"><label>المبلغ (ر.س)</label><input className="input" type="number" placeholder="0.00" dir="ltr" /></div>
-                        <div className="input-group"><label>تاريخ الاستحقاق</label><input className="input" type="date" dir="ltr" /></div>
+                        <div className="input-group">
+                            <label>اسم العميل</label>
+                            <input className="input" placeholder="اسم الشركة أو العميل" value={clientName} onChange={e => setClientName(e.target.value)} />
+                        </div>
+                        <div className="input-group">
+                            <label>رقم الجوال</label>
+                            <input className="input" placeholder="05xxxxxxxx" dir="ltr" value={clientPhone} onChange={e => setClientPhone(e.target.value)} />
+                        </div>
+                        <div className="input-group">
+                            <label>المبلغ الأساسي (ر.س)</label>
+                            <input className="input" type="number" placeholder="0.00" dir="ltr" value={amount} onChange={e => setAmount(e.target.value)} />
+                        </div>
                     </div>
-                    <div className="input-group mt-4"><label>ملاحظات</label><textarea className="input" placeholder="ملاحظات إضافية..." rows={2} /></div>
+                    <div className="input-group mt-4">
+                        <label>ملاحظات</label>
+                        <textarea className="input" placeholder="ملاحظات إضافية..." rows={2} value={notes} onChange={e => setNotes(e.target.value)} />
+                    </div>
                     <div className="flex gap-2 mt-4">
-                        <button className="btn btn-primary">حفظ وإرسال</button>
+                        <button className="btn btn-primary" onClick={handleCreate}>حفظ وإصدار</button>
                         <button className="btn btn-secondary" onClick={() => setShowCreate(false)}>إلغاء</button>
                     </div>
-                    <p className="text-xs text-muted mt-2">* يتم احتساب ضريبة القيمة المضافة (15%) تلقائياً</p>
+                    <p className="text-xs text-muted mt-2">* يتم احتساب ضريبة القيمة المضافة (15%) للإجمالي تلقائياً</p>
                 </div>
             )}
 
@@ -83,26 +149,30 @@ export default function Invoicing() {
                                 <th>الضريبة (15%)</th>
                                 <th>الإجمالي</th>
                                 <th>الحالة</th>
-                                <th>التاريخ</th>
+                                <th>تاريخ الإصدار</th>
                                 <th>إجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {invoices.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8" className="text-center p-4 text-muted">لا يوجد فواتير حاليا. قم بإنشاء أول فاتورة!</td>
+                                </tr>
+                            ) : null}
                             {invoices.map((inv) => {
-                                const Status = statusMap[inv.status];
+                                const Status = statusMap[inv.status] || statusMap.pending;
                                 return (
                                     <tr key={inv.id}>
-                                        <td className="font-semibold">{inv.id}</td>
-                                        <td>{inv.client}</td>
+                                        <td className="font-semibold" dir="ltr" style={{ textAlign: 'right' }}>{inv.invoice_number}</td>
+                                        <td>{inv.client_name}</td>
                                         <td>{inv.amount.toLocaleString()} ر.س</td>
-                                        <td>{inv.vat.toLocaleString()} ر.س</td>
-                                        <td className="font-semibold">{(inv.amount + inv.vat).toLocaleString()} ر.س</td>
+                                        <td>{inv.vat_amount.toLocaleString()} ر.س</td>
+                                        <td className="font-semibold">{inv.total.toLocaleString()} ر.س</td>
                                         <td><span className={`badge ${Status.badge}`}>{Status.label}</span></td>
-                                        <td className="text-muted">{inv.date}</td>
+                                        <td className="text-muted" dir="ltr" style={{ textAlign: 'right' }}>{inv.created_at?.split('T')[0]}</td>
                                         <td>
                                             <div className="flex gap-1">
                                                 <button className="btn btn-icon btn-ghost"><FiEye size={16} /></button>
-                                                <button className="btn btn-icon btn-ghost"><FiDownload size={16} /></button>
                                                 <button className="btn btn-icon btn-ghost" style={{ color: '#F87171' }}><FiTrash2 size={16} /></button>
                                             </div>
                                         </td>
