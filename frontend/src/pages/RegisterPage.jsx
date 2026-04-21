@@ -1,19 +1,23 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiMail, FiLock, FiBriefcase, FiArrowLeft, FiFileText, FiHash, FiShield } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiBriefcase, FiArrowLeft, FiFileText, FiHash, FiShield, FiHeart, FiHome, FiTool, FiShoppingCart, FiBookOpen, FiCoffee, FiCpu, FiAward } from 'react-icons/fi';
 
 const sectors = [
-    { id: 'clinic', label: 'عيادة', icon: '🧑‍⚕️' },
-    { id: 'real_estate', label: 'عقارات', icon: '🏗' },
-    { id: 'workshop', label: 'ورشة', icon: '🚗' },
-    { id: 'ecommerce', label: 'تجارة إلكترونية', icon: '🛒' },
+    { id: 'clinic', label: 'عيادة', icon: <FiHeart size={24} /> },
+    { id: 'real_estate', label: 'عقارات', icon: <FiHome size={24} /> },
+    { id: 'workshop', label: 'ورشة', icon: <FiTool size={24} /> },
+    { id: 'ecommerce', label: 'تجارة إلكترونية', icon: <FiShoppingCart size={24} /> },
+    { id: 'law', label: 'محاماة', icon: <FiAward size={24} /> },
+    { id: 'food', label: 'مطاعم', icon: <FiCoffee size={24} /> },
+    { id: 'tech', label: 'تقنية', icon: <FiCpu size={24} /> },
+    { id: 'education', label: 'تعليم', icon: <FiBookOpen size={24} /> },
 ];
 
 const entityTypes = [
-    { id: 'company', label: 'شركة🏢' },
-    { id: 'establishment', label: 'مؤسسة🏪' },
-    { id: 'individual', label: 'فرد👩‍💻' }
+    { id: 'company', label: 'شركة', icon: <FiBriefcase style={{ marginLeft: '6px' }} /> },
+    { id: 'establishment', label: 'مؤسسة', icon: <FiHome style={{ marginLeft: '6px' }} /> },
+    { id: 'individual', label: 'فرد', icon: <FiUser style={{ marginLeft: '6px' }} /> }
 ];
 
 export default function RegisterPage() {
@@ -122,7 +126,9 @@ export default function RegisterPage() {
                                                 key={t.id} type="button"
                                                 className={`btn ${form.entityType === t.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                                                 onClick={() => updateForm('entityType', t.id)}
+                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                             >
+                                                {t.icon}
                                                 {t.label}
                                             </button>
                                         ))}

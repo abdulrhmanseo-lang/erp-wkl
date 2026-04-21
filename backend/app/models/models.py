@@ -16,6 +16,10 @@ class CompanySector(str, enum.Enum):
     REAL_ESTATE = "real_estate"
     WORKSHOP = "workshop"
     ECOMMERCE = "ecommerce"
+    LAW = "law"
+    FOOD = "food"
+    TECH = "tech"
+    EDUCATION = "education"
 
 
 class SubscriptionPlan(str, enum.Enum):
