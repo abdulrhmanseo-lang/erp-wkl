@@ -4,6 +4,9 @@ import DashboardLayout from './layouts/DashboardLayout';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AboutPage from './pages/AboutPage';
+import BlogPage from './pages/BlogPage';
+import HelpCenterPage from './pages/HelpCenterPage';
 import Dashboard from './pages/Dashboard';
 import AIAgents from './pages/AIAgents';
 import Communications from './pages/Communications';
@@ -32,6 +35,9 @@ function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/help" element={<HelpCenterPage />} />
 
       {/* Shared Profile & Settings (Accessible by any logged-in user regardless of role) */}
       <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

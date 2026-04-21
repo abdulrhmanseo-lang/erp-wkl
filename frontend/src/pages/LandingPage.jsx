@@ -269,15 +269,15 @@ export default function LandingPage() {
                         </div>
                         <div className="footer-col">
                             <h4>الشركة</h4>
-                            <a href="#">من نحن</a>
-                            <a href="#">المدونة</a>
-                            <a href="#">الوظائف</a>
+                            <Link to="/about">من نحن</Link>
+                            <Link to="/blog">المدونة</Link>
+                            <Link to="#">الوظائف</Link>
                         </div>
                         <div className="footer-col">
                             <h4>الدعم</h4>
-                            <a href="#">مركز المساعدة</a>
-                            <a href="#">تواصل معنا</a>
-                            <a href="#">الشروط والأحكام</a>
+                            <Link to="/help">مركز المساعدة</Link>
+                            <Link to="#">تواصل معنا</Link>
+                            <Link to="#">الشروط والأحكام</Link>
                         </div>
                     </div>
                     <div className="footer-bottom">
