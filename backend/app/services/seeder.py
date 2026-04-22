@@ -7,10 +7,11 @@ from sqlalchemy.orm import Session
 from ..models.models import (
     Tenant, User, Invoice, Patient, Appointment,
     Property, ServiceRecord, Product, Order, Campaign,
+    Employee, Client, Attendance, LeaveRequest,
     CompanySector, SubscriptionPlan, UserRole,
 )
 from ..core.security import get_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
 def seed_database(db: Session):
@@ -52,6 +53,59 @@ def seed_database(db: Session):
         Invoice(invoice_number="INV-1542", tenant_id=3, client_name="محمد العتيبي", client_phone="0556666666", amount=4500, vat_amount=675, total=5175, status="pending", created_at=now - timedelta(days=7)),
     ]
     db.add_all(invoices)
+
+    # ── Employees ──
+    employees = [
+        Employee(tenant_id=2, full_name="سارة أحمد", email="sara@test.com", phone="0551234567", position="مدير المبيعات", department="المبيعات", salary=12000, hire_date=date(2024, 1, 15), status="active"),
+        Employee(tenant_id=2, full_name="محمد الشهري", email="m.shahri@test.com", phone="0552345678", position="محاسب", department="المالية", salary=9000, hire_date=date(2024, 3, 1), status="active"),
+        Employee(tenant_id=2, full_name="فهد العتيبي", email="f.otaibi@test.com", phone="0553456789", position="مطور", department="التقنية", salary=15000, hire_date=date(2023, 6, 15), status="active"),
+        Employee(tenant_id=2, full_name="نورة الحربي", email="n.harbi@test.com", phone="0554567890", position="مصممة", department="التقنية", salary=11000, hire_date=date(2024, 5, 1), status="active"),
+        Employee(tenant_id=2, full_name="خالد المالكي", email="k.malki@test.com", phone="0555678901", position="مدير التسويق", department="التسويق", salary=13000, hire_date=date(2023, 9, 1), status="active"),
+        Employee(tenant_id=2, full_name="مريم السعيد", email="m.saeed@test.com", phone="0556789012", position="خدمة عملاء", department="الدعم", salary=7500, hire_date=date(2024, 7, 1), status="active"),
+        Employee(tenant_id=2, full_name="عبدالرحمن القحطاني", email="a.qahtani@test.com", phone="0557890123", position="مندوب مبيعات", department="المبيعات", salary=8000, hire_date=date(2024, 2, 15), status="on_leave"),
+        Employee(tenant_id=1, full_name="د. سلمى الدوسري", email="s.dosari@test.com", phone="0558901234", position="طبيبة أسنان", department="الطب", salary=20000, hire_date=date(2023, 1, 1), status="active"),
+        Employee(tenant_id=1, full_name="هند العمري", email="h.omari@test.com", phone="0559012345", position="ممرضة", department="التمريض", salary=8500, hire_date=date(2024, 4, 1), status="active"),
+        Employee(tenant_id=4, full_name="سعود الحربي", email="s.harbi@test.com", phone="0550123456", position="مدير المتجر", department="العمليات", salary=10000, hire_date=date(2024, 1, 1), status="active"),
+    ]
+    db.add_all(employees)
+    db.flush()
+
+    # ── Attendance ──
+    today = date.today()
+    attendance_records = []
+    for emp in employees[:7]:  # tenant_id=2 employees
+        for i in range(5):
+            d = today - timedelta(days=i)
+            att = Attendance(
+                employee_id=emp.id,
+                tenant_id=2,
+                date=d,
+                check_in=datetime(d.year, d.month, d.day, 8, 0),
+                check_out=datetime(d.year, d.month, d.day, 17, 0) if i < 4 else None,
+                status="present" if i % 5 != 3 else "late",
+            )
+            attendance_records.append(att)
+    db.add_all(attendance_records)
+
+    # ── Leave Requests ──
+    leave_requests = [
+        LeaveRequest(employee_id=employees[6].id, tenant_id=2, leave_type="annual", start_date=today, end_date=today + timedelta(days=7), reason="إجازة سنوية", status="approved"),
+        LeaveRequest(employee_id=employees[1].id, tenant_id=2, leave_type="sick", start_date=today + timedelta(days=3), end_date=today + timedelta(days=5), reason="مراجعة طبية", status="pending"),
+    ]
+    db.add_all(leave_requests)
+
+    # ── Clients (CRM) ──
+    clients = [
+        Client(tenant_id=2, name="شركة الفجر التقنية", email="info@alfajr.com", phone="0111234567", company="الفجر التقنية", source="website", status="active", total_revenue=17250),
+        Client(tenant_id=2, name="مؤسسة النخبة", email="info@nokhba.com", phone="0112345678", company="مؤسسة النخبة", source="referral", status="active", total_revenue=9775),
+        Client(tenant_id=2, name="عبدالله السالم", email="a.salem@gmail.com", phone="0553334455", source="social", status="lead", total_revenue=0),
+        Client(tenant_id=2, name="شركة الأصيل", email="info@aseel.sa", phone="0114567890", company="الأصيل للتجارة", source="cold_call", status="prospect", total_revenue=0),
+        Client(tenant_id=2, name="مكتب دار العقار", email="info@dar.sa", phone="0554444444", company="دار العقار", source="referral", status="active", total_revenue=25300),
+        Client(tenant_id=4, name="سعود الحربي", email="saud@gmail.com", phone="0555555555", source="website", status="active", total_revenue=7820),
+        Client(tenant_id=4, name="فاطمة السعيد", email="fatima@gmail.com", phone="0559876543", source="social", status="active", total_revenue=1350),
+        Client(tenant_id=1, name="نورة العتيبي", email="noura@gmail.com", phone="0551234567", source="referral", status="active", total_revenue=3680),
+    ]
+    db.add_all(clients)
 
     # ── Patients (Clinic) ──
     patients = [

@@ -19,6 +19,10 @@ import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import SectorModule from './pages/SectorModule';
 import AdminDashboard from './pages/AdminDashboard';
+import Employees from './pages/Employees';
+import HRModule from './pages/HRModule';
+import Reports from './pages/Reports';
+import Clients from './pages/Clients';
 import './index.css';
 import './App.css';
 
@@ -39,7 +43,7 @@ function AppRoutes() {
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/help" element={<HelpCenterPage />} />
 
-      {/* Shared Profile & Settings (Accessible by any logged-in user regardless of role) */}
+      {/* Shared Profile & Settings */}
       <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
@@ -58,6 +62,10 @@ function AppRoutes() {
         <Route path="sector" element={<SectorModule />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="billing" element={<Billing />} />
+        <Route path="employees" element={<Employees />} />
+        <Route path="hr" element={<HRModule />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="clients" element={<Clients />} />
       </Route>
 
       {/* Admin Dashboard */}

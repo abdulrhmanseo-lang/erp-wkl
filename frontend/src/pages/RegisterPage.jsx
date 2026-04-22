@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiMail, FiLock, FiBriefcase, FiArrowLeft, FiFileText, FiHash, FiShield, FiHeart, FiHome, FiTool, FiShoppingCart, FiBookOpen, FiCoffee, FiCpu, FiAward } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiBriefcase, FiArrowLeft, FiFileText, FiHash, FiHome, FiHeart, FiTool, FiShoppingCart, FiBookOpen, FiCoffee, FiCpu, FiAward, FiAlertCircle } from 'react-icons/fi';
 
 const sectors = [
     { id: 'clinic', label: 'عيادة', icon: <FiHeart size={24} /> },
@@ -25,6 +25,7 @@ export default function RegisterPage() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const [form, setForm] = useState({
         name: '',
         email: '',
@@ -41,10 +42,26 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
         if (step === 1) {
+            if (!form.name || !form.email || !form.password) {
+                setError('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            if (form.password.length < 6) {
+                setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
             setStep(2);
             return;
         }
+
+        if (form.entityType !== 'individual' && !form.companyName) {
+            setError('يرجى إدخال اسم الشركة أو المؤسسة');
+            return;
+        }
+
         setLoading(true);
         try {
             await register({
@@ -60,7 +77,7 @@ export default function RegisterPage() {
             });
             navigate('/app');
         } catch (err) {
-            console.error(err);
+            setError(err.message || 'حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى');
         } finally {
             setLoading(false);
         }
@@ -88,6 +105,13 @@ export default function RegisterPage() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="auth-form">
+                        {error && (
+                            <div className="auth-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <FiAlertCircle size={18} />
+                                <span>{error}</span>
+                            </div>
+                        )}
+
                         {step === 1 ? (
                             <>
                                 <div className="input-group">
@@ -112,7 +136,7 @@ export default function RegisterPage() {
                                     <label>كلمة المرور</label>
                                     <div className="input-icon-wrapper">
                                         <FiLock className="input-icon" />
-                                        <input type="password" className="input input-with-icon" placeholder="••••••••" value={form.password} onChange={(e) => updateForm('password', e.target.value)} required dir="ltr" />
+                                        <input type="password" className="input input-with-icon" placeholder="••••••••" value={form.password} onChange={(e) => updateForm('password', e.target.value)} required dir="ltr" minLength={6} />
                                     </div>
                                 </div>
                             </>
@@ -186,7 +210,7 @@ export default function RegisterPage() {
 
                         <div className="auth-actions">
                             {step === 2 && (
-                                <button type="button" className="btn btn-ghost" onClick={() => setStep(1)}>
+                                <button type="button" className="btn btn-ghost" onClick={() => { setStep(1); setError(''); }}>
                                     رجوع
                                 </button>
                             )}

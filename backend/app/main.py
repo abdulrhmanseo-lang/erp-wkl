@@ -5,7 +5,7 @@ from .core.config import settings
 from .core.database import create_tables, SessionLocal
 from .models import models  # noqa: F401 — ensures models are registered
 from .services.seeder import seed_database
-from .api import auth, companies, dashboard, invoices, ai
+from .api import auth, companies, dashboard, invoices, ai, employees, hr, reports, clients
 
 
 @asynccontextmanager
@@ -46,7 +46,7 @@ async def root():
         "version": settings.APP_VERSION,
         "status": "running",
         "message": "مرحباً بك في وكل API 🚀",
-        "database": "SQLite — connected ✅",
+        "database": "PostgreSQL — connected ✅",
     }
 
 
@@ -61,3 +61,7 @@ app.include_router(companies.router, prefix="/api/v1/companies", tags=["Companie
 app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["Dashboard"])
 app.include_router(invoices.router, prefix="/api/v1/invoices", tags=["Invoices"])
 app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI"])
+app.include_router(employees.router, prefix="/api/v1/employees", tags=["Employees"])
+app.include_router(hr.router, prefix="/api/v1/hr", tags=["HR"])
+app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(clients.router, prefix="/api/v1/clients", tags=["Clients"])

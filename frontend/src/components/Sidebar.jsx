@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     FiGrid, FiCpu, FiMessageCircle, FiTrendingUp, FiFileText,
     FiZap, FiLayers, FiBell, FiCreditCard, FiSettings, FiLogOut,
-    FiUsers, FiDollarSign, FiBarChart2, FiActivity
+    FiUsers, FiDollarSign, FiBarChart2, FiActivity, FiClock, FiTarget, FiUserCheck
 } from 'react-icons/fi';
 
 const iconMap = {
@@ -18,6 +18,10 @@ const iconMap = {
     notifications: FiBell,
     billing: FiCreditCard,
     settings: FiSettings,
+    employees: FiUserCheck,
+    hr: FiClock,
+    clients: FiTarget,
+    reports: FiBarChart2,
     companies: FiUsers,
     revenue: FiDollarSign,
     subscriptions: FiCreditCard,
