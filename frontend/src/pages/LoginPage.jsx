@@ -135,13 +135,13 @@ export default function LoginPage() {
                     <div className="auth-demo-box glass">
                         <p className="text-xs text-muted mb-2">حسابات تجريبية:</p>
                         <div className="demo-accounts">
-                            <button type="button" className="demo-account" onClick={() => { setEmail('admin@smartops.com'); setPassword('admin123'); }}>
+                            <button type="button" className="demo-account" onClick={() => { setEmail('admin@wkl.sa'); setPassword('123456'); }}>
                                 <span>مدير النظام</span>
-                                <span className="text-xs text-muted">admin@smartops.com</span>
+                                <span className="text-xs text-muted">admin@wkl.sa</span>
                             </button>
-                            <button type="button" className="demo-account" onClick={() => { setEmail('emp@smartops.com'); setPassword('emp123'); }}>
-                                <span>موظف (تجريبي)</span>
-                                <span className="text-xs text-muted">emp@smartops.com</span>
+                            <button type="button" className="demo-account" onClick={() => { setEmail('owner@test.com'); setPassword('123456'); }}>
+                                <span>صاحب شركة (تجريبي)</span>
+                                <span className="text-xs text-muted">owner@test.com</span>
                             </button>
                         </div>
                     </div>
