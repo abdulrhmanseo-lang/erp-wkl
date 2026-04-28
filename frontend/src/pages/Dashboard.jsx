@@ -19,8 +19,8 @@ const chartOptions = {
         legend: { display: false },
         tooltip: {
             rtl: true,
-            titleFont: { family: 'IBM Plex Sans Arabic' },
-            bodyFont: { family: 'IBM Plex Sans Arabic' },
+            titleFont: { family: 'Thmanyah Sans' },
+            bodyFont: { family: 'Thmanyah Sans' },
             backgroundColor: 'rgba(17, 24, 39, 0.95)',
             borderColor: 'rgba(255,255,255,0.1)',
             borderWidth: 1,
@@ -31,11 +31,11 @@ const chartOptions = {
     scales: {
         x: {
             grid: { color: 'rgba(255,255,255,0.05)' },
-            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'IBM Plex Sans Arabic' } },
+            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'Thmanyah Sans' } },
         },
         y: {
             grid: { color: 'rgba(255,255,255,0.05)' },
-            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'IBM Plex Sans Arabic' } },
+            ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'Thmanyah Sans' } },
         },
     },
 };

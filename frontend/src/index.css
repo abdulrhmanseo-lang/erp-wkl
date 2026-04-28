@@ -1,4 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+/* ── Thmanyah Sans Font Family ── */
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('https://framerusercontent.com/assets/Lh8puxCFq405qBv7dKpg9NsHZNk.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('https://framerusercontent.com/assets/x6EBzvXf1Fi35XhsRoHxePDVo.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('https://framerusercontent.com/assets/oE98mOPE28KTzUeptOLRIaqW1I.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('https://framerusercontent.com/assets/LZvgFRUsP7pGWYj3tKxMUrKuhSY.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('https://framerusercontent.com/assets/ulQLGTktcl2Qq4AmD6RuVgELZKg.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ============================================================
    وكل — ULTRA PREMIUM DESIGN SYSTEM
@@ -113,7 +152,7 @@ html {
 }
 
 body {
-  font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Thmanyah Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #000000;
   color: var(--text-primary);
   direction: rtl;
@@ -214,7 +253,7 @@ img {
   padding: 12px 28px;
   border: none;
   border-radius: var(--radius-full);
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-family: 'Thmanyah Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -345,7 +384,7 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-md);
   color: white;
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-family: 'Thmanyah Sans', sans-serif;
   font-size: 0.95rem;
   transition: all var(--transition-fast);
   outline: none;
