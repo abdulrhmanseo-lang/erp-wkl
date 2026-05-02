@@ -6,23 +6,29 @@ from ..models.models import Tenant
 router = APIRouter()
 
 
+from .deps import get_current_user
+from ..models.models import User
+
 @router.get("/")
-async def list_companies(db: Session = Depends(get_db)):
-    tenants = db.query(Tenant).all()
+async def list_companies(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
+    tenant = db.query(Tenant).filter(Tenant.id == tenant_id).first()
+    if not tenant:
+        return {"companies": [], "total": 0}
+        
     companies = [
         {
-            "id": t.id,
-            "name": t.name,
-            "sector": t.sector.value,
-            "plan": t.subscription_plan.value,
-            "phone": t.phone,
-            "address": t.address,
-            "is_active": t.is_active,
-            "created_at": t.created_at.isoformat() if t.created_at else None,
+            "id": tenant.id,
+            "name": tenant.name,
+            "sector": tenant.sector.value,
+            "plan": tenant.subscription_plan.value,
+            "phone": tenant.phone,
+            "address": tenant.address,
+            "is_active": tenant.is_active,
+            "created_at": tenant.created_at.isoformat() if tenant.created_at else None,
         }
-        for t in tenants
     ]
-    return {"companies": companies, "total": len(companies)}
+    return {"companies": companies, "total": 1}
 
 
 @router.get("/{company_id}")

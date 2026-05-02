@@ -3,13 +3,15 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sqlfunc
 from ..core.database import get_db
-from ..models.models import Invoice, Employee, Client, Order, Campaign, Tenant
+from ..models.models import Invoice, Employee, Client, Order, Campaign, User
+from .deps import get_current_user
 
 router = APIRouter()
 
 
 @router.get("/revenue")
-async def revenue_report(tenant_id: int = 1, db: Session = Depends(get_db)):
+async def revenue_report(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     total_revenue = db.query(sqlfunc.coalesce(sqlfunc.sum(Invoice.total), 0)).filter(
         Invoice.tenant_id == tenant_id, Invoice.status == "paid"
     ).scalar()
@@ -34,7 +36,8 @@ async def revenue_report(tenant_id: int = 1, db: Session = Depends(get_db)):
 
 
 @router.get("/employees")
-async def employee_report(tenant_id: int = 1, db: Session = Depends(get_db)):
+async def employee_report(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     total = db.query(sqlfunc.count(Employee.id)).filter(Employee.tenant_id == tenant_id).scalar()
     active = db.query(sqlfunc.count(Employee.id)).filter(Employee.tenant_id == tenant_id, Employee.status == "active").scalar()
     total_salaries = db.query(sqlfunc.coalesce(sqlfunc.sum(Employee.salary), 0)).filter(Employee.tenant_id == tenant_id, Employee.status == "active").scalar()
@@ -52,7 +55,8 @@ async def employee_report(tenant_id: int = 1, db: Session = Depends(get_db)):
 
 
 @router.get("/clients")
-async def client_report(tenant_id: int = 1, db: Session = Depends(get_db)):
+async def client_report(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     total = db.query(sqlfunc.count(Client.id)).filter(Client.tenant_id == tenant_id).scalar()
     active = db.query(sqlfunc.count(Client.id)).filter(Client.tenant_id == tenant_id, Client.status == "active").scalar()
     total_revenue = db.query(sqlfunc.coalesce(sqlfunc.sum(Client.total_revenue), 0)).filter(Client.tenant_id == tenant_id).scalar()
@@ -70,7 +74,8 @@ async def client_report(tenant_id: int = 1, db: Session = Depends(get_db)):
 
 
 @router.get("/overview")
-async def overview_report(tenant_id: int = 1, db: Session = Depends(get_db)):
+async def overview_report(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     revenue = db.query(sqlfunc.coalesce(sqlfunc.sum(Invoice.total), 0)).filter(Invoice.tenant_id == tenant_id, Invoice.status == "paid").scalar()
     invoices = db.query(sqlfunc.count(Invoice.id)).filter(Invoice.tenant_id == tenant_id).scalar()
     employees = db.query(sqlfunc.count(Employee.id)).filter(Employee.tenant_id == tenant_id).scalar()

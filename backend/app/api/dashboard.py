@@ -7,20 +7,26 @@ from ..models.models import Invoice, Order, Product, User, Tenant
 router = APIRouter()
 
 
+from .deps import get_current_user
+
 @router.get("/")
-async def get_dashboard(db: Session = Depends(get_db)):
+async def get_dashboard(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
+    if not tenant_id:
+        return {"error": "User does not belong to any tenant."}
+
     # Revenue
-    total_revenue = db.query(func.sum(Invoice.total)).scalar() or 0
-    paid_revenue = db.query(func.sum(Invoice.total)).filter(Invoice.status == "paid").scalar() or 0
+    total_revenue = db.query(func.sum(Invoice.total)).filter(Invoice.tenant_id == tenant_id).scalar() or 0
+    paid_revenue = db.query(func.sum(Invoice.total)).filter(Invoice.tenant_id == tenant_id, Invoice.status == "paid").scalar() or 0
 
     # Counts
-    total_invoices = db.query(func.count(Invoice.id)).scalar() or 0
-    total_users = db.query(func.count(User.id)).scalar() or 0
-    total_companies = db.query(func.count(Tenant.id)).scalar() or 0
+    total_invoices = db.query(func.count(Invoice.id)).filter(Invoice.tenant_id == tenant_id).scalar() or 0
+    total_users = db.query(func.count(User.id)).filter(User.tenant_id == tenant_id).scalar() or 0
+    total_companies = 1 # tenant is just 1 for a tenant user
 
     # Orders
-    total_orders = db.query(func.count(Order.id)).scalar() or 0
-    pending_orders = db.query(func.count(Order.id)).filter(Order.status == "pending").scalar() or 0
+    total_orders = db.query(func.count(Order.id)).filter(Order.tenant_id == tenant_id).scalar() or 0
+    pending_orders = db.query(func.count(Order.id)).filter(Order.tenant_id == tenant_id, Order.status == "pending").scalar() or 0
 
     return {
         "revenue": {"total": round(total_revenue, 2), "paid": round(paid_revenue, 2), "trend": 8.5},

@@ -7,7 +7,8 @@ class Settings(BaseSettings):
     # App
     APP_NAME: str = "وكل"
     APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "production")
+    DEBUG: bool = ENVIRONMENT == "development"
 
     # Database — SQLite (auto-creates, no external DB needed)
     DATABASE_URL: str = os.getenv(
@@ -16,7 +17,9 @@ class Settings(BaseSettings):
     )
 
     # JWT
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "smartops-secret-key-change-in-production-2026")
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY must be set in environment variables")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
 
@@ -27,8 +30,8 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: list = [
         "http://localhost:5173",
         "http://localhost:3000",
-        "http://localhost:8000",
-        "*",
+        "https://wkl.com",
+        "https://www.wkl.com"
     ]
 
     class Config:

@@ -104,10 +104,14 @@ async def get_insights():
         }
     }
 
+class MarketingCopyRequest(BaseModel):
+    description: str = "منتج"
+    ad_type: str = "social"
+
 @router.post("/generate-copy")
-async def generate_marketing_copy(data: dict):
-    product = data.get("description", "منتج")
-    ad_type = data.get("ad_type", "social")
+async def generate_marketing_copy(data: MarketingCopyRequest):
+    product = data.description
+    ad_type = data.ad_type
     await asyncio.sleep(1)
     copies = {
         "social": f"🌟 عرض حصري لعملائنا! اكتشف {product} الآن واستمتع بخصم 30% لفترة محدودة. لا تفوّت الفرصة! 📱",

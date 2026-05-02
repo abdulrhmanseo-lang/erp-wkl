@@ -5,7 +5,8 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 from ..core.database import get_db
-from ..models.models import Client
+from ..models.models import Client, User
+from .deps import get_current_user
 
 router = APIRouter()
 
@@ -31,7 +32,8 @@ class ClientUpdate(BaseModel):
 
 
 @router.get("/")
-async def list_clients(tenant_id: int = 1, db: Session = Depends(get_db)):
+async def list_clients(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     clients = db.query(Client).filter(Client.tenant_id == tenant_id).order_by(Client.created_at.desc()).all()
     return [
         {
@@ -52,7 +54,8 @@ async def list_clients(tenant_id: int = 1, db: Session = Depends(get_db)):
 
 
 @router.post("/")
-async def create_client(data: ClientCreate, tenant_id: int = 1, db: Session = Depends(get_db)):
+async def create_client(data: ClientCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     client = Client(
         tenant_id=tenant_id,
         name=data.name,

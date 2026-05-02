@@ -85,21 +85,22 @@ from pydantic import BaseModel
 class GoogleLoginRequest(BaseModel):
     credential: str
 
+import os
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
 @router.post("/google-login", response_model=Token)
 async def google_login(data: GoogleLoginRequest, db: Session = Depends(get_db)):
-    # In a real-world scenario, you would use google.oauth2.id_token to verify the credential.
-    # For this implementation, we simulate decoding or accept the credential as a mock.
-    # try:
-    #     from google.oauth2 import id_token
-    #     from google.auth.transport import requests
-    #     idinfo = id_token.verify_oauth2_token(data.credential, requests.Request(), "GOOGLE_CLIENT_ID")
-    # except Exception:
-    #     raise HTTPException(status_code=400, detail="Google auth error")
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "YOUR_GOOGLE_CLIENT_ID")
+    try:
+        idinfo = id_token.verify_oauth2_token(data.credential, requests.Request(), google_client_id)
+        email = idinfo["email"]
+        name = idinfo.get("name", "Google User")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Failed to verify Google token")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Google auth error: {str(e)}")
 
-    # MOCK decoding for full UX logic without breaking
-    email = "google_user@company.com"
-    name = "Google User"
-    
     user = db.query(User).filter(User.email == email).first()
     if not user:
         sector = CompanySector.ECOMMERCE
@@ -108,7 +109,7 @@ async def google_login(data: GoogleLoginRequest, db: Session = Depends(get_db)):
         db.flush()
         user = User(
             email=email,
-            hashed_password=get_password_hash("random_generated_pass"),
+            hashed_password=get_password_hash("google_sso_no_password"),
             full_name=name,
             role=UserRole.COMPANY_OWNER,
             tenant_id=tenant.id,

@@ -5,7 +5,8 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date, datetime
 from ..core.database import get_db
-from ..models.models import Attendance, LeaveRequest, Employee
+from ..models.models import Attendance, LeaveRequest, Employee, User
+from .deps import get_current_user
 
 router = APIRouter()
 
@@ -26,7 +27,8 @@ class LeaveRequestCreate(BaseModel):
 
 
 @router.get("/attendance")
-async def list_attendance(tenant_id: int = 1, target_date: Optional[str] = None, db: Session = Depends(get_db)):
+async def list_attendance(target_date: Optional[str] = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     query = db.query(Attendance).filter(Attendance.tenant_id == tenant_id)
     if target_date:
         query = query.filter(Attendance.date == target_date)
@@ -47,7 +49,8 @@ async def list_attendance(tenant_id: int = 1, target_date: Optional[str] = None,
 
 
 @router.post("/attendance/check-in")
-async def check_in(data: AttendanceCreate, tenant_id: int = 1, db: Session = Depends(get_db)):
+async def check_in(data: AttendanceCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     record = Attendance(
         employee_id=data.employee_id,
         tenant_id=tenant_id,
@@ -72,7 +75,8 @@ async def check_out(record_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/leaves")
-async def list_leaves(tenant_id: int = 1, db: Session = Depends(get_db)):
+async def list_leaves(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     leaves = db.query(LeaveRequest).filter(LeaveRequest.tenant_id == tenant_id).order_by(LeaveRequest.created_at.desc()).all()
     return [
         {
@@ -90,7 +94,8 @@ async def list_leaves(tenant_id: int = 1, db: Session = Depends(get_db)):
 
 
 @router.post("/leaves")
-async def create_leave(data: LeaveRequestCreate, tenant_id: int = 1, db: Session = Depends(get_db)):
+async def create_leave(data: LeaveRequestCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     leave = LeaveRequest(
         employee_id=data.employee_id,
         tenant_id=tenant_id,
@@ -115,7 +120,8 @@ async def update_leave_status(leave_id: int, status: str = "approved", db: Sessi
 
 
 @router.get("/payroll-summary")
-async def payroll_summary(tenant_id: int = 1, db: Session = Depends(get_db)):
+async def payroll_summary(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
     employees = db.query(Employee).filter(Employee.tenant_id == tenant_id, Employee.status == "active").all()
     total_salaries = sum(e.salary for e in employees)
     return {

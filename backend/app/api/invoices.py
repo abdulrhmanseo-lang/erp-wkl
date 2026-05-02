@@ -2,14 +2,17 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import Optional
 from ..core.database import get_db
-from ..models.models import Invoice
+from ..models.models import Invoice, User
+from ..schemas.schemas import InvoiceCreate
+from .deps import get_current_user
 
 router = APIRouter()
 
 
 @router.get("/")
-async def list_invoices(status: Optional[str] = None, db: Session = Depends(get_db)):
-    query = db.query(Invoice)
+async def list_invoices(status: Optional[str] = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
+    query = db.query(Invoice).filter(Invoice.tenant_id == tenant_id)
     if status:
         query = query.filter(Invoice.status == status)
     invoices = query.order_by(Invoice.created_at.desc()).all()
@@ -35,24 +38,25 @@ async def list_invoices(status: Optional[str] = None, db: Session = Depends(get_
 
 
 @router.post("/")
-async def create_invoice(data: dict, db: Session = Depends(get_db)):
-    amount = float(data.get("amount", 0))
+async def create_invoice(data: InvoiceCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    tenant_id = current_user.tenant_id
+    amount = float(data.amount)
     vat = round(amount * 0.15, 2)
 
     # Generate invoice number
-    last = db.query(Invoice).order_by(Invoice.id.desc()).first()
+    last = db.query(Invoice).filter(Invoice.tenant_id == tenant_id).order_by(Invoice.id.desc()).first()
     next_num = (last.id + 1548) if last else 1548
 
     invoice = Invoice(
         invoice_number=f"INV-{next_num}",
-        tenant_id=data.get("tenant_id", 1),
-        client_name=data.get("client_name", ""),
-        client_phone=data.get("client_phone", ""),
+        tenant_id=tenant_id,
+        client_name=data.client_name,
+        client_phone=data.client_phone or "",
         amount=amount,
         vat_amount=vat,
         total=round(amount + vat, 2),
         status="pending",
-        notes=data.get("notes", ""),
+        notes=data.notes or "",
     )
     db.add(invoice)
     db.commit()
