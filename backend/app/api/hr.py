@@ -65,8 +65,8 @@ async def check_in(data: AttendanceCreate, db: Session = Depends(get_db), curren
 
 
 @router.put("/attendance/{record_id}/check-out")
-async def check_out(record_id: int, db: Session = Depends(get_db)):
-    record = db.query(Attendance).filter(Attendance.id == record_id).first()
+async def check_out(record_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    record = db.query(Attendance).filter(Attendance.id == record_id, Attendance.tenant_id == current_user.tenant_id).first()
     if not record:
         raise HTTPException(status_code=404, detail="سجل الحضور غير موجود")
     record.check_out = datetime.utcnow()
@@ -110,8 +110,8 @@ async def create_leave(data: LeaveRequestCreate, db: Session = Depends(get_db), 
 
 
 @router.put("/leaves/{leave_id}")
-async def update_leave_status(leave_id: int, status: str = "approved", db: Session = Depends(get_db)):
-    leave = db.query(LeaveRequest).filter(LeaveRequest.id == leave_id).first()
+async def update_leave_status(leave_id: int, status: str = "approved", db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    leave = db.query(LeaveRequest).filter(LeaveRequest.id == leave_id, LeaveRequest.tenant_id == current_user.tenant_id).first()
     if not leave:
         raise HTTPException(status_code=404, detail="طلب الإجازة غير موجود")
     leave.status = status

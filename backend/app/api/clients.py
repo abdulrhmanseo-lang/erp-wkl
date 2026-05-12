@@ -73,8 +73,8 @@ async def create_client(data: ClientCreate, db: Session = Depends(get_db), curre
 
 
 @router.put("/{client_id}")
-async def update_client(client_id: int, data: ClientUpdate, db: Session = Depends(get_db)):
-    client = db.query(Client).filter(Client.id == client_id).first()
+async def update_client(client_id: int, data: ClientUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    client = db.query(Client).filter(Client.id == client_id, Client.tenant_id == current_user.tenant_id).first()
     if not client:
         raise HTTPException(status_code=404, detail="العميل غير موجود")
 
@@ -88,8 +88,8 @@ async def update_client(client_id: int, data: ClientUpdate, db: Session = Depend
 
 
 @router.delete("/{client_id}")
-async def delete_client(client_id: int, db: Session = Depends(get_db)):
-    client = db.query(Client).filter(Client.id == client_id).first()
+async def delete_client(client_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    client = db.query(Client).filter(Client.id == client_id, Client.tenant_id == current_user.tenant_id).first()
     if not client:
         raise HTTPException(status_code=404, detail="العميل غير موجود")
     db.delete(client)

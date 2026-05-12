@@ -76,8 +76,8 @@ async def create_employee(data: EmployeeCreate, db: Session = Depends(get_db), c
 
 
 @router.put("/{employee_id}")
-async def update_employee(employee_id: int, data: EmployeeUpdate, db: Session = Depends(get_db)):
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+async def update_employee(employee_id: int, data: EmployeeUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    employee = db.query(Employee).filter(Employee.id == employee_id, Employee.tenant_id == current_user.tenant_id).first()
     if not employee:
         raise HTTPException(status_code=404, detail="الموظف غير موجود")
 
@@ -90,8 +90,8 @@ async def update_employee(employee_id: int, data: EmployeeUpdate, db: Session = 
 
 
 @router.delete("/{employee_id}")
-async def delete_employee(employee_id: int, db: Session = Depends(get_db)):
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+async def delete_employee(employee_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    employee = db.query(Employee).filter(Employee.id == employee_id, Employee.tenant_id == current_user.tenant_id).first()
     if not employee:
         raise HTTPException(status_code=404, detail="الموظف غير موجود")
     db.delete(employee)

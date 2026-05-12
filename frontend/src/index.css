@@ -135,6 +135,233 @@
 }
 
 /* ═══════════════════════════════════════
+   LIGHT THEME — White × Purple × Blue Deep Blend
+   ═══════════════════════════════════════ */
+
+[data-theme="light"] {
+  /* ── Premium Purple-Blue Palette ── */
+  --gold: #6D28D9;
+  --gold-bright: #7C3AED;
+  --gold-deep: #5B21B6;
+  --gold-dim: #4C1D95;
+  --emerald: #3B82F6;
+  --emerald-bright: #60A5FA;
+  --emerald-deep: #2563EB;
+  --white: #FFFFFF;
+  --white-soft: #F5F3FF;
+  --warm-white: #EDE9FE;
+
+  /* ── Gradients — Purple-Blue Blend ── */
+  --gradient-main: linear-gradient(135deg, #7C3AED 0%, #6366F1 50%, #3B82F6 100%);
+  --gradient-reverse: linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #7C3AED 100%);
+  --gradient-hero: linear-gradient(160deg, #F9FAFF 0%, #F5F7FF 30%, #EEF2FF 60%, #E8EDFF 100%);
+  --gradient-card: linear-gradient(135deg, rgba(124, 58, 237, 0.04) 0%, rgba(59, 130, 246, 0.03) 100%);
+  --gradient-btn: linear-gradient(135deg, #7C3AED 0%, #6366F1 45%, #2563EB 100%);
+  --gradient-btn-hover: linear-gradient(135deg, #8B5CF6 0%, #7175F3 45%, #3B82F6 100%);
+  --gradient-glow: linear-gradient(135deg, rgba(124, 58, 237, 0.35) 0%, rgba(59, 130, 246, 0.25) 100%);
+  --gradient-text: linear-gradient(135deg, #6D28D9 0%, #6366F1 45%, #2563EB 100%);
+  --gradient-sidebar: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 255, 0.9) 100%);
+  --gradient-aurora-1: radial-gradient(ellipse at 15% 50%, rgba(124, 58, 237, 0.12) 0%, transparent 60%);
+  --gradient-aurora-2: radial-gradient(ellipse at 85% 15%, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
+  --gradient-aurora-3: radial-gradient(ellipse at 50% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+
+  /* ── Background Colors ── */
+  --bg-dark: #F2F4FD;
+  --bg-darker: #EEF0FB;
+  --bg-card: rgba(255, 255, 255, 0.65);
+  --bg-card-solid: #F9FAFF;
+
+  /* ── Glass — Frosted with Purple-Blue tint ── */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-hover: rgba(255, 255, 255, 0.72);
+  --glass-bg-strong: rgba(255, 255, 255, 0.72);
+  --glass-bg-active: rgba(109, 40, 217, 0.08);
+  --glass-border: rgba(109, 40, 217, 0.1);
+  --glass-border-hover: rgba(59, 130, 246, 0.22);
+  --glass-border-active: rgba(109, 40, 217, 0.4);
+
+  /* ── Text ── */
+  --text-primary: #1E1B4B;
+  --text-secondary: #4338CA;
+  --text-muted: #818CF8;
+  --text-accent: #4F46E5;
+
+  /* ── Status Colors ── */
+  --success: #059669;
+  --success-bg: rgba(5, 150, 105, 0.1);
+  --warning: #D97706;
+  --warning-bg: rgba(217, 119, 6, 0.1);
+  --danger: #DC2626;
+  --danger-bg: rgba(220, 38, 38, 0.1);
+  --info: #3B82F6;
+  --info-bg: rgba(59, 130, 246, 0.1);
+
+  /* ── Shadows — Purple-Blue Glow ── */
+  --shadow-sm: 0 2px 10px rgba(109, 40, 217, 0.06), 0 1px 4px rgba(59, 130, 246, 0.04);
+  --shadow-md: 0 4px 24px rgba(109, 40, 217, 0.08), 0 2px 12px rgba(59, 130, 246, 0.05);
+  --shadow-lg: 0 8px 40px rgba(109, 40, 217, 0.1), 0 4px 20px rgba(59, 130, 246, 0.06);
+  --shadow-glow-gold: 0 0 30px rgba(109, 40, 217, 0.15), 0 0 60px rgba(59, 130, 246, 0.08);
+  --shadow-glow-emerald: 0 0 30px rgba(59, 130, 246, 0.15), 0 0 60px rgba(109, 40, 217, 0.08);
+  --shadow-glow-mixed: 0 0 30px rgba(109, 40, 217, 0.12), 0 0 60px rgba(59, 130, 246, 0.1);
+  --shadow-btn: 0 4px 20px rgba(109, 40, 217, 0.2), 0 2px 40px rgba(59, 130, 246, 0.12);
+  --shadow-btn-hover: 0 6px 30px rgba(109, 40, 217, 0.3), 0 4px 60px rgba(59, 130, 246, 0.18);
+  --shadow-card: 0 4px 30px rgba(109, 40, 217, 0.05), 0 2px 15px rgba(59, 130, 246, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+/* ── Light theme body ── */
+[data-theme="light"] body {
+  background: #EEF0FB;
+  color: var(--text-primary);
+}
+
+/* ── Light theme selection ── */
+[data-theme="light"] ::selection {
+  background: rgba(99, 102, 241, 0.25);
+  color: #1E1B4B;
+}
+
+/* ── Light theme aurora — BIG glowing blobs ── */
+[data-theme="light"] .bg-aurora {
+  background:
+    radial-gradient(ellipse 900px 900px at 0% 0%, rgba(124, 58, 237, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 850px 850px at 100% 0%, rgba(59, 130, 246, 0.13) 0%, transparent 70%),
+    radial-gradient(ellipse 1000px 1000px at 50% 100%, rgba(99, 102, 241, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 800px 800px at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 700px 700px at 20% 60%, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+  animation: aurora 20s ease infinite;
+  background-size: 200% 200%;
+}
+
+/* ── Light theme grid ── */
+[data-theme="light"] .bg-grid {
+  background-image:
+    linear-gradient(rgba(109, 40, 217, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+}
+
+/* ── Light theme glass cards ── */
+[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border-color: rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08), 0 4px 16px rgba(59, 130, 246, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .glass-strong {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(48px) saturate(200%);
+  -webkit-backdrop-filter: blur(48px) saturate(200%);
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow: 0 8px 40px rgba(99, 102, 241, 0.1), 0 4px 20px rgba(59, 130, 246, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border-color: rgba(109, 40, 217, 0.08);
+  box-shadow: 0 4px 24px rgba(109, 40, 217, 0.05), 0 2px 10px rgba(59, 130, 246, 0.03);
+}
+
+[data-theme="light"] .glass-card::before {
+  background: linear-gradient(90deg, transparent, rgba(109, 40, 217, 0.12), rgba(59, 130, 246, 0.08), transparent);
+}
+
+[data-theme="light"] .glass-card:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(109, 40, 217, 0.2);
+  box-shadow: 0 8px 40px rgba(109, 40, 217, 0.1), 0 4px 20px rgba(59, 130, 246, 0.06);
+}
+
+[data-theme="light"] .glass-card::after {
+  background: linear-gradient(90deg, transparent, rgba(109, 40, 217, 0.2), rgba(59, 130, 246, 0.15), transparent);
+}
+
+/* ── Light theme buttons ── */
+[data-theme="light"] .btn-primary {
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .btn-secondary {
+  background: rgba(109, 40, 217, 0.05);
+  border-color: rgba(109, 40, 217, 0.14);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(109, 40, 217, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 20px rgba(109, 40, 217, 0.08), 0 0 10px rgba(59, 130, 246, 0.05);
+}
+
+[data-theme="light"] .btn-ghost {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .btn-ghost:hover {
+  color: #1E1B4B;
+  background: rgba(109, 40, 217, 0.06);
+}
+
+/* ── Light theme inputs ── */
+[data-theme="light"] .input {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(109, 40, 217, 0.1);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.06), 0 0 20px rgba(59, 130, 246, 0.05);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .input::placeholder {
+  color: rgba(30, 27, 75, 0.35);
+}
+
+/* ── Light theme scrollbar ── */
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(109, 40, 217, 0.2), rgba(59, 130, 246, 0.15));
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(109, 40, 217, 0.35), rgba(59, 130, 246, 0.25));
+}
+
+/* ── Light theme tables ── */
+[data-theme="light"] table th {
+  color: var(--text-secondary);
+  border-bottom-color: rgba(109, 40, 217, 0.08);
+}
+
+[data-theme="light"] table td {
+  border-bottom-color: rgba(109, 40, 217, 0.04);
+}
+
+[data-theme="light"] table tr:hover td {
+  background: rgba(109, 40, 217, 0.03);
+}
+
+/* ── Light theme text helpers ── */
+[data-theme="light"] .text-gradient {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] a {
+  color: var(--gold);
+}
+
+[data-theme="light"] a:hover {
+  color: var(--emerald-deep);
+}
+
+/* ═══════════════════════════════════════
    RESET & BASE
    ═══════════════════════════════════════ */
 

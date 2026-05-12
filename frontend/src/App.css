@@ -2738,3 +2738,568 @@
     left: 16px;
   }
 }
+
+/* ═══════════════════════════════════════
+   LIGHT THEME — Component Overrides
+   ═══════════════════════════════════════ */
+
+/* ── Theme Toggle Button ── */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: 1.2rem;
+  backdrop-filter: blur(10px);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(200, 169, 96, 0.1);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: rotate(20deg) scale(1.1);
+}
+
+[data-theme="light"] .theme-toggle-btn {
+  border-color: rgba(124, 58, 237, 0.15);
+  background: rgba(124, 58, 237, 0.06);
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+  background: rgba(124, 58, 237, 0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── Landing Navbar ── */
+[data-theme="light"] .landing-nav {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .landing-nav-links a {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .landing-nav-links a:hover {
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .mobile-nav-toggle {
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .logo-name {
+  color: #1E1B4B;
+}
+
+/* ── Hero Section ── */
+[data-theme="light"] .landing-page {
+  background: var(--bg-darker);
+}
+
+[data-theme="light"] .hero-section::before {
+  background: radial-gradient(circle 500px, rgba(109, 40, 217, 0.1) 0%, transparent 70%);
+}
+
+[data-theme="light"] .hero-section::after {
+  background: radial-gradient(circle 450px, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+}
+
+[data-theme="light"] .hero-badge {
+  background: linear-gradient(135deg, rgba(109, 40, 217, 0.08), rgba(59, 130, 246, 0.06));
+  border-color: rgba(109, 40, 217, 0.18);
+}
+
+[data-theme="light"] .hero-stat-divider {
+  background: linear-gradient(180deg, transparent, rgba(109, 40, 217, 0.2), rgba(59, 130, 246, 0.15), transparent);
+}
+
+/* ── Preview Card ── */
+[data-theme="light"] .preview-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  border-color: rgba(109, 40, 217, 0.12);
+  box-shadow: 0 20px 60px rgba(109, 40, 217, 0.1), 0 0 40px rgba(59, 130, 246, 0.06);
+}
+
+[data-theme="light"] .preview-kpi {
+  background: rgba(109, 40, 217, 0.03);
+  border-color: rgba(109, 40, 217, 0.06);
+}
+
+[data-theme="light"] .preview-chart {
+  background: rgba(59, 130, 246, 0.02);
+  border-color: rgba(109, 40, 217, 0.05);
+}
+
+[data-theme="light"] .preview-bar {
+  background: var(--gradient-main);
+  box-shadow: 0 0 10px rgba(109, 40, 217, 0.15), 0 0 5px rgba(59, 130, 246, 0.1);
+}
+
+/* ── Feature Cards ── */
+[data-theme="light"] .feature-card::after {
+  background: linear-gradient(90deg, transparent, rgba(109, 40, 217, 0.15), rgba(59, 130, 246, 0.1), transparent);
+}
+
+/* ── Pricing ── */
+[data-theme="light"] .pricing-popular {
+  border-color: rgba(124, 58, 237, 0.35);
+  box-shadow: 0 0 40px rgba(124, 58, 237, 0.12), 0 20px 60px rgba(124, 58, 237, 0.08);
+  background: rgba(124, 58, 237, 0.04);
+}
+
+[data-theme="light"] .pricing-features li {
+  border-bottom-color: rgba(124, 58, 237, 0.05);
+}
+
+/* ── CTA Section ── */
+[data-theme="light"] .cta-content {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 0 60px rgba(124, 58, 237, 0.08);
+}
+
+/* ── Footer ── */
+[data-theme="light"] .landing-footer {
+  border-top-color: rgba(124, 58, 237, 0.1);
+}
+
+[data-theme="light"] .footer-col h4 {
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .footer-bottom {
+  border-top-color: rgba(124, 58, 237, 0.08);
+}
+
+/* ── Auth Pages ── */
+[data-theme="light"] .auth-page {
+  background: var(--bg-darker);
+}
+
+[data-theme="light"] .auth-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(124, 58, 237, 0.12);
+  box-shadow: 0 20px 80px rgba(124, 58, 237, 0.1), 0 0 40px rgba(124, 58, 237, 0.05);
+}
+
+[data-theme="light"] .auth-error {
+  background: var(--danger-bg);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="light"] .step-dot {
+  background: rgba(124, 58, 237, 0.05);
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .sector-option {
+  background: rgba(124, 58, 237, 0.03);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .sector-option:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+[data-theme="light"] .sector-selected {
+  border-color: var(--gold) !important;
+  background: rgba(124, 58, 237, 0.1) !important;
+}
+
+[data-theme="light"] .auth-demo-box {
+  background: rgba(124, 58, 237, 0.03);
+  border-color: rgba(124, 58, 237, 0.1);
+}
+
+[data-theme="light"] .demo-account {
+  background: rgba(124, 58, 237, 0.03);
+  border-color: rgba(124, 58, 237, 0.08);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .demo-account:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: var(--gold);
+}
+
+/* ── Sidebar ── */
+[data-theme="light"] .sidebar {
+  background: var(--gradient-sidebar);
+  border-left-color: rgba(124, 58, 237, 0.1);
+  box-shadow: -4px 0 30px rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .sidebar-header {
+  border-bottom-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .nav-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .nav-item::before {
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.08), transparent);
+}
+
+[data-theme="light"] .nav-item:hover {
+  background: rgba(124, 58, 237, 0.06);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .nav-item-active {
+  background: rgba(124, 58, 237, 0.1);
+  color: #1E1B4B;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .nav-indicator {
+  background: var(--gradient-main);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+}
+
+[data-theme="light"] .sidebar-footer {
+  border-top-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .nav-item-logout:hover {
+  background: var(--danger-bg);
+}
+
+/* ── Navbar ── */
+[data-theme="light"] .navbar {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom-color: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .mobile-menu-btn {
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .search-box {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.1);
+}
+
+[data-theme="light"] .search-box:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .search-input {
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .search-input::placeholder {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .navbar-icon-btn {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.1);
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .navbar-icon-btn:hover {
+  background: rgba(124, 58, 237, 0.08);
+  color: #1E1B4B;
+  border-color: var(--gold);
+}
+
+[data-theme="light"] .navbar-profile-btn {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.1);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .navbar-profile-btn:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: var(--gold);
+}
+
+/* ── Dropdown Panels ── */
+[data-theme="light"] .dropdown-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 15px 50px rgba(124, 58, 237, 0.12);
+}
+
+[data-theme="light"] .dropdown-header {
+  border-bottom-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .notif-item {
+  border-bottom-color: rgba(124, 58, 237, 0.05);
+}
+
+[data-theme="light"] .notif-item:hover {
+  background: rgba(124, 58, 237, 0.04);
+}
+
+[data-theme="light"] .notif-unread {
+  background: rgba(124, 58, 237, 0.04);
+}
+
+[data-theme="light"] .dropdown-divider {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .dropdown-item {
+  color: rgba(30, 27, 75, 0.6);
+}
+
+[data-theme="light"] .dropdown-item:hover {
+  background: rgba(124, 58, 237, 0.04);
+  color: #1E1B4B;
+}
+
+/* ── KPI Cards ── */
+[data-theme="light"] .profile-cover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
+  border-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .profile-avatar-container {
+  background: var(--bg-card-solid);
+  border-color: rgba(124, 58, 237, 0.1);
+}
+
+[data-theme="light"] .profile-nav {
+  border-bottom-color: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .profile-nav-item:hover,
+[data-theme="light"] .profile-nav-item.active {
+  background: rgba(124, 58, 237, 0.05);
+}
+
+[data-theme="light"] .profile-nav-item.active {
+  background: rgba(124, 58, 237, 0.08);
+  color: var(--gold);
+}
+
+[data-theme="light"] .timeline::before {
+  background: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .timeline-icon {
+  background: var(--bg-card-solid);
+  border-color: rgba(124, 58, 237, 0.08);
+}
+
+/* ── Insights ── */
+[data-theme="light"] .agent-insights {
+  background: rgba(124, 58, 237, 0.03);
+  border-color: rgba(124, 58, 237, 0.08);
+}
+
+/* ── Chat / Communications ── */
+[data-theme="light"] .chat-contacts {
+  border-left-color: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .contacts-header {
+  border-bottom-color: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .search-box-sm {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .search-box-sm input {
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .contact-item {
+  border-bottom-color: rgba(124, 58, 237, 0.03);
+}
+
+[data-theme="light"] .contact-item:hover {
+  background: rgba(124, 58, 237, 0.04);
+}
+
+[data-theme="light"] .contact-active {
+  background: rgba(124, 58, 237, 0.06);
+  border-right-color: var(--gold);
+}
+
+[data-theme="light"] .online-dot {
+  border-color: var(--bg-card-solid);
+}
+
+[data-theme="light"] .chat-header {
+  border-bottom-color: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .message-received .message-bubble {
+  background: rgba(124, 58, 237, 0.05);
+}
+
+[data-theme="light"] .message-sent .message-bubble {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.15);
+}
+
+[data-theme="light"] .chat-input-area {
+  border-top-color: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .chat-input {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.1);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .chat-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.08);
+}
+
+/* ── Activity ── */
+[data-theme="light"] .activity-item {
+  border-bottom-color: rgba(124, 58, 237, 0.04);
+}
+
+/* ── Notification ── */
+[data-theme="light"] .notif-card-unread {
+  border-right-color: var(--gold);
+  background: rgba(124, 58, 237, 0.03) !important;
+}
+
+/* ── Settings ── */
+[data-theme="light"] .company-logo-upload {
+  background: rgba(124, 58, 237, 0.03);
+  border-color: rgba(124, 58, 237, 0.15);
+}
+
+[data-theme="light"] .generated-copy {
+  background: rgba(124, 58, 237, 0.03);
+  border-color: rgba(124, 58, 237, 0.1);
+}
+
+/* ── Google Sign-In ── */
+[data-theme="light"] .btn-google {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.12);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .btn-google:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.2);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
+}
+
+[data-theme="light"] .auth-divider::before,
+[data-theme="light"] .auth-divider::after {
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.1), transparent);
+}
+
+/* ── AI Chat Modal ── */
+[data-theme="light"] .ai-chat-overlay {
+  background: rgba(124, 58, 237, 0.15);
+}
+
+[data-theme="light"] .ai-chat-modal {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15), 0 0 40px rgba(124, 58, 237, 0.05);
+}
+
+[data-theme="light"] .ai-chat-header {
+  border-bottom-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .ai-chat-close {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .ai-chat-close:hover {
+  background: rgba(124, 58, 237, 0.05);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .ai-msg-bot .ai-msg-bubble {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .ai-msg-user .ai-msg-bubble {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.12);
+}
+
+[data-theme="light"] .ai-typing {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .ai-chat-input-area {
+  border-top-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .ai-chat-input {
+  background: rgba(124, 58, 237, 0.04);
+  border-color: rgba(124, 58, 237, 0.08);
+  color: #1E1B4B;
+}
+
+[data-theme="light"] .ai-chat-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .ai-chat-send {
+  color: #FFFFFF;
+}
+
+/* ── Mobile Bottom Nav ── */
+[data-theme="light"] .mobile-bottom-nav {
+  background: rgba(255, 255, 255, 0.9);
+  border-top-color: rgba(124, 58, 237, 0.08);
+}
+
+[data-theme="light"] .mobile-nav-btn {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .mobile-nav-btn.active {
+  color: var(--gold);
+}
+
+/* ── Floating AI Chat ── */
+[data-theme="light"] .floating-ai-fab {
+  color: white;
+}
+
+[data-theme="light"] .floating-ai-panel {
+  border-color: rgba(124, 58, 237, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* ── Sidebar overlay mobile ── */
+[data-theme="light"] .sidebar-overlay {
+  background: rgba(124, 58, 237, 0.15);
+}
+
+/* ── Mobile landing nav ── */
+@media (max-width: 768px) {
+  [data-theme="light"] .landing-nav-links {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: rgba(124, 58, 237, 0.1);
+  }
+}

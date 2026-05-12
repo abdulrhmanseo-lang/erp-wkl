@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { pricingPlans } from '../data/mockData';
+import { useTheme } from '../context/ThemeContext';
 import {
-    FiArrowLeft, FiCheck, FiMenu, FiX,
+    FiArrowLeft, FiCheck, FiMenu, FiX, FiSun, FiMoon,
     FiCpu, FiMessageCircle, FiBarChart2, FiFileText, FiGlobe, FiTarget,
     FiActivity, FiBriefcase, FiTool, FiShoppingCart, FiUser
 } from 'react-icons/fi';
@@ -32,6 +33,7 @@ const landingTestimonials = [
 export default function LandingPage() {
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
+    const { theme, toggleTheme } = useTheme();
 
     return (
         <div className="landing-page">
@@ -48,6 +50,9 @@ export default function LandingPage() {
                         <a href="#features">المميزات</a>
                         <a href="#testimonials">آراء العملاء</a>
                         <a href="#pricing">الأسعار</a>
+                        <button className="theme-toggle-btn" onClick={toggleTheme} title={theme === 'dark' ? 'النمط النهاري' : 'النمط الليلي'}>
+                            {theme === 'dark' ? <FiSun size={18} /> : <FiMoon size={18} />}
+                        </button>
                         <Link to="/login" className="btn btn-secondary btn-sm">تسجيل الدخول</Link>
                         <Link to="/register" className="btn btn-primary btn-sm">ابدأ مجاناً</Link>
                     </div>
