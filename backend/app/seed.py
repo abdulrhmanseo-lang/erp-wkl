@@ -3,9 +3,9 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.core.database import SessionLocal
-from app.models.models import User, Tenant, UserRole, CompanySector, SubscriptionPlan
-from passlib.context import CryptContext
+from app.core.database import SessionLocal  # type: ignore[import-not-found]
+from app.models.models import User, Tenant, UserRole, CompanySector, SubscriptionPlan  # type: ignore[import-not-found]
+from passlib.context import CryptContext  # type: ignore[import-untyped]
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

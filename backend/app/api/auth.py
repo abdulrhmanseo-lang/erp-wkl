@@ -1,11 +1,21 @@
+import os
+
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from google.oauth2 import id_token  # type: ignore[import-untyped]
+from google.auth.transport import requests  # type: ignore[import-untyped]
+
 from ..schemas.schemas import UserLogin, UserRegister, Token
 from ..core.security import get_password_hash, verify_password, create_access_token
 from ..core.database import get_db
 from ..models.models import User, Tenant, CompanySector, UserRole
 
 router = APIRouter()
+
+
+class GoogleLoginRequest(BaseModel):
+    credential: str
 
 
 @router.post("/login", response_model=Token)
@@ -81,13 +91,6 @@ async def register(data: UserRegister, db: Session = Depends(get_db)):
         }
     )
 
-from pydantic import BaseModel
-class GoogleLoginRequest(BaseModel):
-    credential: str
-
-import os
-from google.oauth2 import id_token
-from google.auth.transport import requests
 
 @router.post("/google-login", response_model=Token)
 async def google_login(data: GoogleLoginRequest, db: Session = Depends(get_db)):

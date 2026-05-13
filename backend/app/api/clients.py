@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from ..core.database import get_db
 from ..models.models import Client, User
 from .deps import get_current_user
@@ -64,7 +64,7 @@ async def create_client(data: ClientCreate, db: Session = Depends(get_db), curre
         company=data.company,
         source=data.source,
         notes=data.notes,
-        last_contact=datetime.utcnow(),
+        last_contact=datetime.now(timezone.utc),
     )
     db.add(client)
     db.commit()
@@ -78,11 +78,11 @@ async def update_client(client_id: int, data: ClientUpdate, db: Session = Depend
     if not client:
         raise HTTPException(status_code=404, detail="العميل غير موجود")
 
-    for field, value in data.dict(exclude_unset=True).items():
+    for field, value in data.model_dump(exclude_unset=True).items():
         if value is not None:
             setattr(client, field, value)
 
-    client.last_contact = datetime.utcnow()
+    client.last_contact = datetime.now(timezone.utc)
     db.commit()
     return {"message": "تم تحديث بيانات العميل بنجاح"}
 

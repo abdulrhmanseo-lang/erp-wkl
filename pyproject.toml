@@ -1,0 +1,6 @@
+[tool.pyrefly]
+search_path = [
+    "d:\\testcompanymohm\\backend\\Lib\\site-packages",
+    "d:\\testcompanymohm\\backend\\venv\\Lib\\site-packages",
+    "d:\\testcompanymohm\\backend",
+]

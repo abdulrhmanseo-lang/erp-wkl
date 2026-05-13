@@ -81,7 +81,7 @@ async def update_employee(employee_id: int, data: EmployeeUpdate, db: Session = 
     if not employee:
         raise HTTPException(status_code=404, detail="الموظف غير موجود")
 
-    for field, value in data.dict(exclude_unset=True).items():
+    for field, value in data.model_dump(exclude_unset=True).items():
         if value is not None:
             setattr(employee, field, value)
 

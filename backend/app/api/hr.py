@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from ..core.database import get_db
 from ..models.models import Attendance, LeaveRequest, Employee, User
 from .deps import get_current_user
@@ -55,7 +55,7 @@ async def check_in(data: AttendanceCreate, db: Session = Depends(get_db), curren
         employee_id=data.employee_id,
         tenant_id=tenant_id,
         date=data.date,
-        check_in=datetime.utcnow(),
+        check_in=datetime.now(timezone.utc),
         status=data.status,
         notes=data.notes,
     )
@@ -69,7 +69,7 @@ async def check_out(record_id: int, db: Session = Depends(get_db), current_user:
     record = db.query(Attendance).filter(Attendance.id == record_id, Attendance.tenant_id == current_user.tenant_id).first()
     if not record:
         raise HTTPException(status_code=404, detail="سجل الحضور غير موجود")
-    record.check_out = datetime.utcnow()
+    record.check_out = datetime.now(timezone.utc)
     db.commit()
     return {"message": "تم تسجيل الانصراف بنجاح"}
 

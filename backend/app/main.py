@@ -1,17 +1,20 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
+import logging
+
 from .core.config import settings
 from .core.database import create_tables, SessionLocal
 from .models import models  # noqa: F401 — ensures models are registered
 from .services.seeder import seed_database
 from .api import auth, companies, dashboard, invoices, ai, employees, hr, reports, clients
-from fastapi import Depends, Request
 from .api.deps import get_current_user
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-from slowapi.middleware import SlowAPIMiddleware
+
+from slowapi import Limiter, _rate_limit_exceeded_handler  # type: ignore[import-untyped]
+from slowapi.util import get_remote_address  # type: ignore[import-untyped]
+from slowapi.errors import RateLimitExceeded  # type: ignore[import-untyped]
+from slowapi.middleware import SlowAPIMiddleware  # type: ignore[import-untyped]
 
 
 @asynccontextmanager
@@ -39,11 +42,8 @@ app = FastAPI(
 # Rate Limiter setup (Default limit: 100 requests per minute per IP)
 limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
 app.add_middleware(SlowAPIMiddleware)
-
-from fastapi.responses import JSONResponse
-import logging
 
 # CORS
 app.add_middleware(
